@@ -1,0 +1,6 @@
+@import "../starter/tailwind.css";
+
+body {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}

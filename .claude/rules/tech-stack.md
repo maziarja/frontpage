@@ -19,16 +19,20 @@ Always use context7 (`mcp__context7__resolve-library-id` + `mcp__context7__query
 | Client state | TanStack Query v5 |
 | RSS parsing | fast-xml-parser |
 | Drag & drop | dnd-kit |
+| AI | Vercel AI SDK (`ai` + `@ai-sdk/groq`) + Groq API |
 | Deployment | Vercel |
 
 ## Rules
 
 - Use the App Router exclusively — no Pages Router.
+- In Next.js 16, `middleware.ts` is renamed to `proxy.ts` and `export function middleware` becomes `export function proxy`. Always use `proxy.ts` for route protection. Note: `proxy` runs on Node.js runtime only — edge runtime is not supported.
 - All database access goes through Prisma — no raw SQL unless Prisma cannot express the query.
 - All form inputs and API route payloads must be validated with Zod schemas.
 - Server-side only: RSS fetching, Prisma queries, auth session reads.
 - Client-side only: TanStack Query for polling, optimistic updates, and feed refresh state.
 - shadcn/ui is the first choice for any UI primitive — only build custom components when shadcn/ui has no equivalent.
+- AI calls use Vercel AI SDK (`generateText` from `ai`, model from `@ai-sdk/groq`) inside Server Actions — never call Groq API directly from the client.
+- Cache AI-generated summaries in the `FeedItem` table (`summary` column) — never re-generate a summary that already exists.
 
 ## Server vs Client
 

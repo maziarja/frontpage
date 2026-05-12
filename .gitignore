@@ -50,3 +50,5 @@ coverage/
 
 # Misc
 *.tsbuildinfo
+
+/lib/generated/prisma
