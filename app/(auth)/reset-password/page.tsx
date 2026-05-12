@@ -1,7 +1,7 @@
-import { ForgotPassword } from '@/components/auth/forgot-password'
+import { ForgotPasswordForm } from "@/components/auth/forgot-password-form"
 
-export const metadata = { title: 'Reset Password — Frontpage' }
+export const metadata = { title: "Reset Password — Frontpage" }
 
 export default function ResetPasswordPage() {
-  return <ForgotPassword />
+  return <ForgotPasswordForm />
 }

@@ -1,7 +1,7 @@
-import { SignIn } from '@/components/auth/sign-in'
+import { SignInForm } from "@/components/auth/sign-in-form"
 
-export const metadata = { title: 'Sign In — Frontpage' }
+export const metadata = { title: "Sign In — Frontpage" }
 
 export default function SignInPage() {
-  return <SignIn />
+  return <SignInForm />
 }
