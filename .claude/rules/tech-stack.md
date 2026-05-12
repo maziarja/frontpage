@@ -1,0 +1,38 @@
+# Tech Stack Rules
+
+## Documentation
+
+Always use context7 (`mcp__context7__resolve-library-id` + `mcp__context7__query-docs`) to look up current documentation before recommending, configuring, or using any library, framework, SDK, or tool. Never rely on training-data knowledge for versions or APIs.
+
+## Stack
+
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16 — App Router, TypeScript |
+| Styling | Tailwind CSS v4 |
+| UI Components | shadcn/ui |
+| Icons | Lucide React |
+| Database | PostgreSQL + Prisma v7 |
+| Auth | Better Auth v1.3 + Better Auth UI |
+| Validation | Zod v4 |
+| Forms | React Hook Form v7 |
+| Client state | TanStack Query v5 |
+| RSS parsing | fast-xml-parser |
+| Drag & drop | dnd-kit |
+| Deployment | Vercel |
+
+## Rules
+
+- Use the App Router exclusively — no Pages Router.
+- All database access goes through Prisma — no raw SQL unless Prisma cannot express the query.
+- All form inputs and API route payloads must be validated with Zod schemas.
+- Server-side only: RSS fetching, Prisma queries, auth session reads.
+- Client-side only: TanStack Query for polling, optimistic updates, and feed refresh state.
+- shadcn/ui is the first choice for any UI primitive — only build custom components when shadcn/ui has no equivalent.
+
+## Server vs Client
+
+- All pages are Server Components by default — never add `"use client"` to a page unless there is no other option.
+- Prefer Server Components for everything: data fetching, rendering, layout. Only use Client Components when the feature genuinely requires it (browser APIs, event listeners, stateful interactivity, third-party client-only libs).
+- Use Server Actions for all data mutations (form submissions, feed add/delete, read state, bookmarks, preferences). Only fall back to Route Handlers when a Server Action cannot work (e.g. webhooks, RSS proxy fetching, non-form-based external API calls).
+- Never fetch data in a Client Component if a Server Component can do it instead — pass data down as props.
