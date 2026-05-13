@@ -104,7 +104,11 @@ export function FeedPageActions({ feed, categories, children }: Props) {
       >
         <div className="overflow-hidden">
           <div className="pt-4">
-            <EditFeedForm feed={feed} categories={categories} />
+            <EditFeedForm
+              feed={feed}
+              categories={categories}
+              onSuccess={() => setTimeout(() => setEditOpen(false), 1000)}
+            />
           </div>
         </div>
       </div>

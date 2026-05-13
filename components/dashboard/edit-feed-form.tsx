@@ -20,7 +20,15 @@ import { editFeedSchema, type EditFeedValues } from '@/schemas/feed'
 type Category = { id: string; name: string }
 type Feed = { id: string; title: string; categoryId: string | null }
 
-export function EditFeedForm({ feed, categories }: { feed: Feed; categories: Category[] }) {
+export function EditFeedForm({
+  feed,
+  categories,
+  onSuccess,
+}: {
+  feed: Feed
+  categories: Category[]
+  onSuccess?: () => void
+}) {
   const [pending, startTransition] = useTransition()
   const [serverError, setServerError] = useState<string | null>(null)
 
@@ -49,6 +57,7 @@ export function EditFeedForm({ feed, categories }: { feed: Feed; categories: Cat
       } else {
         reset(values)
         toast.success('Feed updated')
+        onSuccess?.()
       }
     })
   }
