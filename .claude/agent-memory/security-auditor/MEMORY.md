@@ -1,0 +1,1 @@
+- [Auth & Session Security Patterns](project-auth-patterns.md) — First audit findings: missing server-side Zod validation in Server Actions, guest cookie value bypass, missing secure flag, broken password reset route

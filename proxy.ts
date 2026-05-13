@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionCookie } from 'better-auth/cookies'
 
-const PROTECTED = ['/dashboard']
+const PUBLIC_PATHS = ['/', '/sign-in', '/sign-up', '/reset-password', '/api/auth']
 const AUTH_PAGES = ['/sign-in', '/sign-up', '/reset-password']
 
 export function proxy(request: NextRequest) {
@@ -10,13 +10,14 @@ export function proxy(request: NextRequest) {
   const guestCookie = request.cookies.get('guest-session')
 
   const isAuthenticated = !!sessionCookie
-  const hasAccess = isAuthenticated || !!guestCookie
+  const isGuest = guestCookie?.value === 'true'
+  const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))
 
-  if (isAuthenticated && AUTH_PAGES.some((p) => pathname === p)) {
+  if (isAuthenticated && AUTH_PAGES.some((p) => pathname.startsWith(p))) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  if (!hasAccess && PROTECTED.some((p) => pathname.startsWith(p))) {
+  if (!isPublic && !isAuthenticated && !isGuest) {
     return NextResponse.redirect(new URL('/sign-in', request.url))
   }
 
@@ -24,5 +25,6 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/sign-in', '/sign-up', '/reset-password'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'
+  ],
 }
