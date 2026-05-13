@@ -1,13 +1,23 @@
 'use client'
 
+import { useState } from 'react'
+import { FeedFavicon } from '@/components/dashboard/feed-favicon'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BookmarkIcon, FolderIcon, LayoutListIcon, RssIcon } from 'lucide-react'
+import {
+  BookmarkIcon,
+  ChevronRightIcon,
+  FolderIcon,
+  LayoutListIcon,
+  PlusIcon,
+  RssIcon,
+} from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
@@ -19,9 +29,10 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
 import { UserMenu } from '@/components/dashboard/user-menu'
+import { AddFeedModal } from '@/components/dashboard/add-feed-modal'
 
 type SidebarUser = { id: string; name: string; email: string } | null
-type SidebarFeed = { id: string; title: string }
+type SidebarFeed = { id: string; title: string; healthStatus: string; faviconUrl: string | null }
 type SidebarCategory = { id: string; name: string; feeds: SidebarFeed[] }
 
 type AppSidebarProps = {
@@ -38,6 +49,8 @@ const topNavItems = [
 export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: AppSidebarProps) {
   const pathname = usePathname()
   const hasContent = categoriesWithFeeds.length > 0 || uncategorizedFeeds.length > 0
+  const [addFeedOpen, setAddFeedOpen] = useState(false)
+  const [uncategorizedOpen, setUncategorizedOpen] = useState(true)
 
   return (
     <Sidebar>
@@ -72,16 +85,15 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
 
         <SidebarGroup>
           <SidebarGroupLabel>My Feeds</SidebarGroupLabel>
+          <SidebarGroupAction onClick={() => setAddFeedOpen(true)} aria-label="Add feed">
+            <PlusIcon />
+          </SidebarGroupAction>
+          <AddFeedModal open={addFeedOpen} onOpenChange={setAddFeedOpen} />
           <SidebarGroupContent>
             {!hasContent ? (
               <p className="text-muted-foreground px-2 py-1 text-sm">
-                No feeds yet.{' '}
-                <Link
-                  href="/dashboard/feeds/new"
-                  className="hover:text-foreground underline underline-offset-4"
-                >
-                  Add your first feed →
-                </Link>
+                No feeds yet. Click <PlusIcon size={12} className="inline" aria-hidden /> to add
+                one.
               </p>
             ) : (
               <SidebarMenu>
@@ -108,7 +120,14 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
                                 pathname === `/dashboard/feed/${feed.id}` ? 'page' : undefined
                               }
                             >
-                              <span>{feed.title}</span>
+                              <FeedFavicon src={feed.faviconUrl} />
+                              <span className="flex-1 truncate">{feed.title}</span>
+                              {feed.healthStatus === 'ERROR' && (
+                                <span
+                                  className="ml-auto h-2 w-2 shrink-0 rounded-full bg-red-500"
+                                  aria-label="Feed error"
+                                />
+                              )}
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
                         ))}
@@ -119,22 +138,36 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
 
                 {uncategorizedFeeds.length > 0 && (
                   <SidebarMenuItem>
-                    <SidebarMenuButton disabled>
+                    <SidebarMenuButton onClick={() => setUncategorizedOpen((v) => !v)}>
                       <RssIcon />
-                      <span className="text-muted-foreground">Uncategorized</span>
+                      <span>Uncategorized</span>
+                      <ChevronRightIcon
+                        size={14}
+                        className={`ml-auto transition-transform duration-200 ${uncategorizedOpen ? 'rotate-90' : ''}`}
+                        aria-hidden="true"
+                      />
                     </SidebarMenuButton>
-                    <SidebarMenuSub>
-                      {uncategorizedFeeds.map((feed) => (
-                        <SidebarMenuSubItem key={feed.id}>
-                          <SidebarMenuSubButton
-                            render={<Link href={`/dashboard/feed/${feed.id}`} />}
-                            isActive={pathname === `/dashboard/feed/${feed.id}`}
-                          >
-                            <span>{feed.title}</span>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
+                    {uncategorizedOpen && (
+                      <SidebarMenuSub>
+                        {uncategorizedFeeds.map((feed) => (
+                          <SidebarMenuSubItem key={feed.id}>
+                            <SidebarMenuSubButton
+                              render={<Link href={`/dashboard/feed/${feed.id}`} />}
+                              isActive={pathname === `/dashboard/feed/${feed.id}`}
+                            >
+                              <FeedFavicon src={feed.faviconUrl} />
+                              <span className="flex-1 truncate">{feed.title}</span>
+                              {feed.healthStatus === 'ERROR' && (
+                                <span
+                                  className="ml-auto h-2 w-2 shrink-0 rounded-full bg-red-500"
+                                  aria-label="Feed error"
+                                />
+                              )}
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        ))}
+                      </SidebarMenuSub>
+                    )}
                   </SidebarMenuItem>
                 )}
               </SidebarMenu>

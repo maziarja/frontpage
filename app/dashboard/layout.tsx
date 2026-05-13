@@ -23,7 +23,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             id: true,
             name: true,
             feeds: {
-              select: { id: true, title: true },
+              select: { id: true, title: true, healthStatus: true, faviconUrl: true },
               orderBy: { title: 'asc' },
             },
           },
@@ -31,7 +31,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         }),
         db.feed.findMany({
           where: { userId, categoryId: null },
-          select: { id: true, title: true },
+          select: { id: true, title: true, healthStatus: true, faviconUrl: true },
           orderBy: { title: 'asc' },
         }),
       ])

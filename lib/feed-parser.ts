@@ -101,6 +101,44 @@ function extractRdfItems(parsed: any, feedId: string): NormalizedFeedItem[] {
   })
 }
 
+export type FeedMeta = {
+  title: string
+  description: string | undefined
+  faviconUrl: string | undefined
+}
+
+export function parseFeedMeta(xml: string): FeedMeta {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const parsed: any = parser.parse(xml)
+
+  if (parsed?.rss) {
+    const ch = parsed.rss.channel
+    return {
+      title: extractText(ch.title) ?? 'Untitled Feed',
+      description: extractText(ch.description),
+      faviconUrl: extractText(ch.image?.url),
+    }
+  }
+  if (parsed?.feed) {
+    const f = parsed.feed
+    return {
+      title: extractText(f.title) ?? 'Untitled Feed',
+      description: extractText(f.subtitle) ?? extractText(f.description),
+      faviconUrl: extractText(f.logo) ?? extractText(f.icon),
+    }
+  }
+  if (parsed?.['rdf:RDF'] || parsed?.['RDF']) {
+    const rdf = parsed['rdf:RDF'] ?? parsed['RDF']
+    const ch = rdf.channel
+    return {
+      title: extractText(ch?.title) ?? 'Untitled Feed',
+      description: extractText(ch?.description),
+      faviconUrl: undefined,
+    }
+  }
+  throw new Error('Unrecognised feed format')
+}
+
 export function parseFeed(xml: string, feedId: string): NormalizedFeedItem[] {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parsed: any = parser.parse(xml)
