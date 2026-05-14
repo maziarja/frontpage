@@ -1,12 +1,28 @@
 'use client'
 
+import { useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { CheckCheckIcon, LayoutListIcon, RefreshCwIcon, SearchIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
 import { ThemeToggle } from '@/components/dashboard/theme-toggle'
+import { useUnreadCounts } from '@/components/dashboard/unread-count-context'
+import { markAllRead } from '@/app/_actions/read-state'
 
 export function TopNav() {
+  const router = useRouter()
+  const { resetAll } = useUnreadCounts()
+  const [pending, startTransition] = useTransition()
+
+  function handleMarkAllRead() {
+    resetAll()
+    startTransition(async () => {
+      await markAllRead()
+      router.refresh()
+    })
+  }
+
   return (
     <header className="text-foreground flex h-12 shrink-0 items-center gap-2 border-b px-4">
       <SidebarTrigger aria-label="Toggle sidebar" className="-ml-1" />
@@ -36,8 +52,9 @@ export function TopNav() {
           variant="ghost"
           size="icon"
           aria-label="Mark all as read"
-          disabled
-          title="Mark all as read — coming soon"
+          onClick={handleMarkAllRead}
+          disabled={pending}
+          title="Mark all as read"
         >
           <CheckCheckIcon size={18} />
         </Button>

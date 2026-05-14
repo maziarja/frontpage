@@ -6,6 +6,7 @@ import { db } from '@/db'
 import { FeedItemList } from '@/components/dashboard/feed-item-list'
 import { FeedItemSkeleton } from '@/components/dashboard/feed-item-skeleton'
 import { PAGE_SIZE } from '@/lib/const'
+import { mapFeedItem } from '@/lib/feed-items'
 
 export default async function CategoryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -13,22 +14,27 @@ export default async function CategoryPage({ params }: { params: Promise<{ id: s
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect('/sign-in')
 
+  const userId = session.user.id
+
   const category = await db.category.findFirst({
-    where: { id, userId: session.user.id },
+    where: { id, userId },
     select: { id: true, name: true },
   })
 
   if (!category) notFound()
 
   const raw = await db.feedItem.findMany({
-    where: { feed: { categoryId: id, userId: session.user.id } },
-    include: { feed: { select: { id: true, title: true, faviconUrl: true } } },
+    where: { feed: { categoryId: id, userId } },
+    include: {
+      feed: { select: { id: true, title: true, faviconUrl: true } },
+      _count: { select: { readStates: { where: { userId } } } },
+    },
     orderBy: { publishedAt: 'desc' },
     take: PAGE_SIZE + 1,
   })
 
   const hasMore = raw.length > PAGE_SIZE
-  const items = raw.slice(0, PAGE_SIZE)
+  const items = raw.slice(0, PAGE_SIZE).map(mapFeedItem)
 
   return (
     <div className="mx-auto max-w-[60rem] px-4 py-4">

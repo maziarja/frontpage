@@ -11,6 +11,7 @@ import { FeedItemSkeleton } from '@/components/dashboard/feed-item-skeleton'
 import { FeedHealthStatus } from '@/lib/generated/prisma/client'
 import { formatDistanceToNow, isAfter, subDays } from 'date-fns'
 import { PAGE_SIZE } from '@/lib/const'
+import { mapFeedItem } from '@/lib/feed-items'
 
 export default async function FeedPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -18,19 +19,24 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect('/sign-in')
 
+  const userId = session.user.id
+
   const [feed, categories, rawItems] = await Promise.all([
     db.feed.findFirst({
-      where: { id, userId: session.user.id },
+      where: { id, userId },
       include: { category: { select: { id: true, name: true } } },
     }),
     db.category.findMany({
-      where: { userId: session.user.id },
+      where: { userId },
       select: { id: true, name: true },
       orderBy: { order: 'asc' },
     }),
     db.feedItem.findMany({
       where: { feedId: id },
-      include: { feed: { select: { id: true, title: true, faviconUrl: true } } },
+      include: {
+        feed: { select: { id: true, title: true, faviconUrl: true } },
+        _count: { select: { readStates: { where: { userId } } } },
+      },
       orderBy: { publishedAt: 'desc' },
       take: PAGE_SIZE + 1,
     }),
@@ -43,7 +49,7 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
       ? `${PAGE_SIZE}+`
       : String(rawItems.length > PAGE_SIZE ? PAGE_SIZE : rawItems.length)
   const hasMore = rawItems.length > PAGE_SIZE
-  const items = rawItems.slice(0, PAGE_SIZE)
+  const items = rawItems.slice(0, PAGE_SIZE).map(mapFeedItem)
 
   const showRetry =
     feed.healthStatus === FeedHealthStatus.ERROR ||
