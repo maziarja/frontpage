@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { FeedItemCard } from '@/components/dashboard/feed-item-card'
 import { useUnreadCounts } from '@/components/dashboard/unread-count-context'
 import { getMoreFeedItems } from '@/app/_actions/feed-items'
-import { markItemRead, markFeedRead, markCategoryRead } from '@/app/_actions/read-state'
+import { markItemRead, markItemUnread, markFeedRead, markCategoryRead } from '@/app/_actions/read-state'
 import type { FeedItemRow } from '@/app/_actions/feed-items'
 import { PAGE_SIZE } from '@/lib/const'
 
@@ -26,7 +26,7 @@ export function FeedItemList({
   showSource = false,
   emptyMessage = 'No articles yet.',
 }: Props) {
-  const { decrement, reset } = useUnreadCounts()
+  const { increment, decrement, reset } = useUnreadCounts()
   const [items, setItems] = useState(initialItems)
   const [hasMore, setHasMore] = useState(initialHasMore)
   const [pending, startTransition] = useTransition()
@@ -38,6 +38,14 @@ export function FeedItemList({
     decrement(item.feed.id)
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, isRead: true } : i)))
     startTransition(() => markItemRead(id))
+  }
+
+  function handleMarkUnread(id: string) {
+    const item = items.find((i) => i.id === id)
+    if (!item || !item.isRead) return
+    increment(item.feed.id)
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, isRead: false } : i)))
+    startTransition(() => markItemUnread(id))
   }
 
   async function handleMarkAllRead() {
@@ -97,7 +105,7 @@ export function FeedItemList({
 
       <div className="flex flex-col gap-0.5">
         {items.map((item) => (
-          <FeedItemCard key={item.id} item={item} showSource={showSource} onMarkRead={handleMarkRead} />
+          <FeedItemCard key={item.id} item={item} showSource={showSource} onMarkRead={handleMarkRead} onMarkUnread={handleMarkUnread} />
         ))}
       </div>
 

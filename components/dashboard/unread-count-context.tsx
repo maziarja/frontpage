@@ -6,6 +6,7 @@ type Counts = Record<string, number> // feedId → unread count
 
 type ContextValue = {
   counts: Counts
+  increment: (feedId: string, amount?: number) => void
   decrement: (feedId: string, amount?: number) => void
   reset: (feedId: string) => void
   resetAll: () => void
@@ -22,6 +23,10 @@ export function UnreadCountProvider({
 }) {
   const [counts, setCounts] = useState(initialCounts)
 
+  function increment(feedId: string, amount = 1) {
+    setCounts((prev) => ({ ...prev, [feedId]: (prev[feedId] ?? 0) + amount }))
+  }
+
   function decrement(feedId: string, amount = 1) {
     setCounts((prev) => ({ ...prev, [feedId]: Math.max(0, (prev[feedId] ?? 0) - amount) }))
   }
@@ -35,7 +40,7 @@ export function UnreadCountProvider({
   }
 
   return (
-    <UnreadCountContext.Provider value={{ counts, decrement, reset, resetAll }}>
+    <UnreadCountContext.Provider value={{ counts, increment, decrement, reset, resetAll }}>
       {children}
     </UnreadCountContext.Provider>
   )
