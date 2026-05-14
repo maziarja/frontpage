@@ -31,7 +31,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ id: s
   const items = raw.slice(0, PAGE_SIZE)
 
   return (
-    <div className="mx-auto max-w-2xl p-6">
+    <div className="mx-auto max-w-[60rem] px-4 py-4">
       <h1 className="mb-4 text-2xl font-semibold">{category.name}</h1>
       <Suspense fallback={<FeedItemSkeleton />}>
         <FeedItemList

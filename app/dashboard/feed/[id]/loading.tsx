@@ -2,7 +2,7 @@ import { FeedItemSkeleton } from '@/components/dashboard/feed-item-skeleton'
 
 export default function FeedPageLoading() {
   return (
-    <div className="mx-auto max-w-2xl p-6">
+    <div className="mx-auto max-w-[60rem] px-4 py-4">
       {/* Header */}
       <div className="flex items-start gap-3">
         <div className="bg-muted mt-1 h-8 w-8 shrink-0 animate-pulse rounded-sm" />

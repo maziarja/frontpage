@@ -22,7 +22,7 @@ export default async function DashboardPage() {
   const items = raw.slice(0, PAGE_SIZE)
 
   return (
-    <div className="mx-auto max-w-2xl p-6">
+    <div className="mx-auto max-w-[60rem] px-4 py-4">
       <h1 className="mb-4 text-2xl font-semibold">All Items</h1>
       <Suspense fallback={<FeedItemSkeleton />}>
         <FeedItemList

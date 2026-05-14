@@ -51,7 +51,7 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
     (feed.lastFetchedAt !== null && isAfter(subDays(new Date(), 30), feed.lastFetchedAt))
 
   return (
-    <div className="mx-auto max-w-2xl p-6">
+    <div className="mx-auto max-w-[60rem] px-4 py-4">
       <FeedPageActions feed={feed} categories={categories}>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <FeedHealthBadge status={feed.healthStatus} lastFetchedAt={feed.lastFetchedAt} />
