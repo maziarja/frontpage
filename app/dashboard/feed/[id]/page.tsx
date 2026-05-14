@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { notFound, redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
@@ -5,8 +6,11 @@ import { db } from '@/db'
 import { FeedHealthBadge } from '@/components/dashboard/feed-health-badge'
 import { RetryButton } from '@/components/dashboard/retry-button'
 import { FeedPageActions } from '@/components/dashboard/feed-page-actions'
+import { FeedItemList } from '@/components/dashboard/feed-item-list'
+import { FeedItemSkeleton } from '@/components/dashboard/feed-item-skeleton'
 import { FeedHealthStatus } from '@/lib/generated/prisma/client'
 import { formatDistanceToNow, isAfter, subDays } from 'date-fns'
+import { PAGE_SIZE } from '@/lib/const'
 
 export default async function FeedPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -14,7 +18,7 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect('/sign-in')
 
-  const [feed, categories] = await Promise.all([
+  const [feed, categories, rawItems] = await Promise.all([
     db.feed.findFirst({
       where: { id, userId: session.user.id },
       include: { category: { select: { id: true, name: true } } },
@@ -24,11 +28,22 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
       select: { id: true, name: true },
       orderBy: { order: 'asc' },
     }),
+    db.feedItem.findMany({
+      where: { feedId: id },
+      include: { feed: { select: { id: true, title: true, faviconUrl: true } } },
+      orderBy: { publishedAt: 'desc' },
+      take: PAGE_SIZE + 1,
+    }),
   ])
 
   if (!feed) notFound()
 
-  const itemCount = await db.feedItem.count({ where: { feedId: feed.id } })
+  const itemCount =
+    rawItems.length === PAGE_SIZE + 1
+      ? `${PAGE_SIZE}+`
+      : String(rawItems.length > PAGE_SIZE ? PAGE_SIZE : rawItems.length)
+  const hasMore = rawItems.length > PAGE_SIZE
+  const items = rawItems.slice(0, PAGE_SIZE)
 
   const showRetry =
     feed.healthStatus === FeedHealthStatus.ERROR ||
@@ -41,7 +56,7 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <FeedHealthBadge status={feed.healthStatus} lastFetchedAt={feed.lastFetchedAt} />
           <span className="text-muted-foreground text-sm">
-            {itemCount} article{itemCount !== 1 ? 's' : ''}
+            {itemCount} article{rawItems.length !== 1 ? 's' : ''}
           </span>
           {feed.lastFetchedAt && (
             <span className="text-muted-foreground text-sm">
@@ -61,6 +76,17 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
           </div>
         )}
       </FeedPageActions>
+      <div className="mt-6 border-t pt-4">
+        <Suspense fallback={<FeedItemSkeleton />}>
+          <FeedItemList
+            initialItems={items}
+            initialHasMore={hasMore}
+            filter={{ feedId: id }}
+            showSource={false}
+            emptyMessage="No articles fetched yet — try refreshing the feed."
+          />
+        </Suspense>
+      </div>
     </div>
   )
 }
