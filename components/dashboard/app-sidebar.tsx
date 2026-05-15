@@ -67,7 +67,6 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
   const hasContent = categoriesWithFeeds.length > 0 || uncategorizedFeeds.length > 0
   const [addFeedOpen, setAddFeedOpen] = useState(false)
   const [uncategorizedOpen, setUncategorizedOpen] = useState(true)
-
   return (
     <Sidebar>
       <SidebarHeader className="px-4 py-3">

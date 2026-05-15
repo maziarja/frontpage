@@ -34,9 +34,9 @@ export function FeedItemCard({ item, showSource = false, onMarkRead, onMarkUnrea
         onClick={() => {
           if (!item.isRead) onMarkRead?.(item.id)
         }}
-        className="flex flex-col gap-2 rounded-lg border-l-[3px] border-transparent py-4 pl-4 pr-8 transition-all duration-200 group-hover:border-primary group-hover:bg-muted/50"
+        className="group-hover:border-primary group-hover:bg-muted/50 flex flex-col gap-2 rounded-lg border-l-[3px] border-transparent py-4 pr-8 pl-4 transition-all duration-200"
       >
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
           {showSource && (
             <>
               <FeedFavicon src={item.feed.faviconUrl} size={13} />
@@ -51,27 +51,19 @@ export function FeedItemCard({ item, showSource = false, onMarkRead, onMarkUnrea
           <span
             aria-hidden="true"
             className={`mt-[5px] block h-[6px] w-[6px] shrink-0 rounded-full transition-all duration-500 ease-out ${
-              item.isRead ? 'scale-0 opacity-0' : 'scale-100 opacity-100'
+              item.isRead ? 'scale-0 opacity-0' : 'unread-dot scale-100 opacity-100'
             }`}
-            style={
-              item.isRead
-                ? undefined
-                : {
-                    background: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%)',
-                    boxShadow: '0 0 0 2.5px rgba(167,139,250,0.18), 0 0 10px rgba(96,165,250,0.5)',
-                  }
-            }
           />
-          <p className="text-base font-semibold leading-snug tracking-tight">{item.title}</p>
+          <p className="text-base leading-snug font-semibold tracking-tight">{item.title}</p>
         </div>
 
         {item.description && (
-          <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+          <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">
             {item.description}
           </p>
         )}
 
-        <span className="mt-0.5 text-xs text-muted-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+        <span className="text-muted-foreground mt-0.5 text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           Read article →
         </span>
       </a>
@@ -80,7 +72,7 @@ export function FeedItemCard({ item, showSource = false, onMarkRead, onMarkUnrea
         onClick={handleToggle}
         title={item.isRead ? 'Mark as unread' : 'Mark as read'}
         aria-label={item.isRead ? 'Mark as unread' : 'Mark as read'}
-        className="text-muted-foreground absolute right-2.5 top-4 rounded p-1 opacity-0 transition-all duration-200 hover:bg-muted hover:text-foreground group-hover:opacity-100"
+        className="text-muted-foreground hover:bg-muted hover:text-foreground absolute top-4 right-2.5 rounded p-1 opacity-0 transition-all duration-200 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
       >
         {item.isRead ? <RotateCcwIcon size={13} /> : <CheckIcon size={13} />}
       </button>

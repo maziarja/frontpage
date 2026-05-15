@@ -17,7 +17,6 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
 
   const data = await getFeedPageData(session.user.id, id)
   if (!data) notFound()
-
   const { feed, categories, items, hasMore, itemCount, showRetry } = data
 
   return (

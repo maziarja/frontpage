@@ -21,7 +21,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const { categoriesWithFeeds, uncategorizedFeeds, initialUnreadCounts } =
     await getLayoutSidebarData(userId)
-
   return (
     <UnreadCountProvider initialCounts={initialUnreadCounts ?? {}}>
       <SidebarProvider>

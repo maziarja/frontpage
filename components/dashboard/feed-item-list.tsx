@@ -5,7 +5,12 @@ import { Button } from '@/components/ui/button'
 import { FeedItemCard } from '@/components/dashboard/feed-item-card'
 import { useUnreadCounts } from '@/components/dashboard/unread-count-context'
 import { getMoreFeedItems } from '@/app/_actions/feed-items'
-import { markItemRead, markItemUnread, markFeedRead, markCategoryRead } from '@/app/_actions/read-state'
+import {
+  markItemRead,
+  markItemUnread,
+  markFeedRead,
+  markCategoryRead,
+} from '@/app/_actions/read-state'
 import type { FeedItemRow } from '@/app/_actions/feed-items'
 import { PAGE_SIZE } from '@/lib/const'
 
@@ -37,7 +42,14 @@ export function FeedItemList({
     if (!item || item.isRead) return
     decrement(item.feed.id)
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, isRead: true } : i)))
-    startTransition(() => markItemRead(id))
+    startTransition(async () => {
+      try {
+        await markItemRead(id)
+      } catch {
+        increment(item.feed.id)
+        setItems((prev) => prev.map((i) => (i.id === id ? { ...i, isRead: false } : i)))
+      }
+    })
   }
 
   function handleMarkUnread(id: string) {
@@ -45,7 +57,14 @@ export function FeedItemList({
     if (!item || !item.isRead) return
     increment(item.feed.id)
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, isRead: false } : i)))
-    startTransition(() => markItemUnread(id))
+    startTransition(async () => {
+      try {
+        await markItemUnread(id)
+      } catch {
+        decrement(item.feed.id)
+        setItems((prev) => prev.map((i) => (i.id === id ? { ...i, isRead: true } : i)))
+      }
+    })
   }
 
   async function handleMarkAllRead() {
@@ -105,7 +124,13 @@ export function FeedItemList({
 
       <div className="flex flex-col gap-0.5">
         {items.map((item) => (
-          <FeedItemCard key={item.id} item={item} showSource={showSource} onMarkRead={handleMarkRead} onMarkUnread={handleMarkUnread} />
+          <FeedItemCard
+            key={item.id}
+            item={item}
+            showSource={showSource}
+            onMarkRead={handleMarkRead}
+            onMarkUnread={handleMarkUnread}
+          />
         ))}
       </div>
 

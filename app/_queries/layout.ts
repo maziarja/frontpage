@@ -61,10 +61,7 @@ export async function getLayoutSidebarData(userId: string | null) {
 
   const normalizedUncategorized = uncategorizedFeeds.map(normalizeFeed)
 
-  const allFeeds = [
-    ...normalizedCategories.flatMap((c) => c.feeds),
-    ...normalizedUncategorized,
-  ]
+  const allFeeds = [...normalizedCategories.flatMap((c) => c.feeds), ...normalizedUncategorized]
 
   return {
     categoriesWithFeeds: normalizedCategories,

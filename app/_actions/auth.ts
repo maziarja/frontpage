@@ -33,7 +33,7 @@ export async function signOut() {
   await auth.api.signOut({ headers: await headers() })
   const cookieStore = await cookies()
   cookieStore.delete('guest-session')
-  redirect('/sign-in')
+  redirect('/')
 }
 
 export async function startGuestSession() {
