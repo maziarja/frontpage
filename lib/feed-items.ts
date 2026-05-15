@@ -1,8 +1,12 @@
+import sanitizeHtml from 'sanitize-html'
+
 export type FeedItemRow = {
   id: string
   url: string
   title: string
   description: string | null
+  content: string | null
+  author: string | null
   publishedAt: Date | null
   createdAt: Date
   isRead: boolean
@@ -14,10 +18,30 @@ type FeedItemWithReadCount = {
   url: string
   title: string
   description: string | null
+  content: string | null
+  author: string | null
   publishedAt: Date | null
   createdAt: Date
   feed: { id: string; title: string; faviconUrl: string | null }
   _count: { readStates: number }
+}
+
+const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: [
+    'p', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'ul', 'ol', 'li', 'a', 'strong', 'em', 'b', 'i',
+    'blockquote', 'code', 'pre', 'img', 'figure', 'figcaption',
+    'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr', 'div', 'span',
+  ],
+  allowedAttributes: {
+    a: ['href', 'title', 'target', 'rel'],
+    img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
+    '*': ['class'],
+  },
+  allowedSchemes: ['http', 'https', 'mailto'],
+  transformTags: {
+    a: sanitizeHtml.simpleTransform('a', { target: '_blank', rel: 'noopener noreferrer' }),
+  },
 }
 
 export function mapFeedItem(item: FeedItemWithReadCount): FeedItemRow {
@@ -26,6 +50,8 @@ export function mapFeedItem(item: FeedItemWithReadCount): FeedItemRow {
     url: item.url,
     title: item.title,
     description: item.description,
+    content: item.content ? sanitizeHtml(item.content, SANITIZE_OPTIONS) : null,
+    author: item.author,
     publishedAt: item.publishedAt,
     createdAt: item.createdAt,
     isRead: item._count.readStates > 0,

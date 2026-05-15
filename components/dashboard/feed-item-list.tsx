@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { FeedItemCard } from '@/components/dashboard/feed-item-card'
+import { ReaderSheet } from '@/components/dashboard/reader-sheet'
 import { useUnreadCounts } from '@/components/dashboard/unread-count-context'
 import { getMoreFeedItems } from '@/app/_actions/feed-items'
 import {
@@ -36,6 +37,12 @@ export function FeedItemList({
   const [hasMore, setHasMore] = useState(initialHasMore)
   const [pending, startTransition] = useTransition()
   const [markingAllRead, setMarkingAllRead] = useState(false)
+  const [readerItemId, setReaderItemId] = useState<string | null>(null)
+
+  // Items that can be opened in the reader (no URL, has content)
+  const readerItems = items.filter((i) => !i.url && i.content)
+  const readerIndex = readerItemId ? readerItems.findIndex((i) => i.id === readerItemId) : -1
+  const readerItem = readerIndex >= 0 ? readerItems[readerIndex] : null
 
   function handleMarkRead(id: string) {
     const item = items.find((i) => i.id === id)
@@ -95,6 +102,19 @@ export function FeedItemList({
     })
   }
 
+  function openReader(id: string) {
+    setReaderItemId(id)
+  }
+
+  function navigateReader(direction: 'prev' | 'next') {
+    if (readerIndex < 0) return
+    const target =
+      direction === 'prev' ? readerItems[readerIndex - 1] : readerItems[readerIndex + 1]
+    if (!target) return
+    setReaderItemId(target.id)
+    if (!target.isRead) handleMarkRead(target.id)
+  }
+
   const hasUnread = items.some((item) => !item.isRead)
   const isFiltered = Boolean(filter.feedId ?? filter.categoryId)
 
@@ -103,44 +123,55 @@ export function FeedItemList({
   }
 
   return (
-    <div className="flex flex-col">
-      {isFiltered && hasUnread && (
-        <div className="mb-2 flex justify-end">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleMarkAllRead}
-            disabled={markingAllRead}
-            className="text-muted-foreground text-xs"
-          >
-            {markingAllRead
-              ? 'Marking…'
-              : filter.feedId
-                ? 'Mark feed as read'
-                : 'Mark category as read'}
-          </Button>
-        </div>
-      )}
+    <>
+      <div className="flex flex-col">
+        {isFiltered && hasUnread && (
+          <div className="mb-2 flex justify-end">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleMarkAllRead}
+              disabled={markingAllRead}
+              className="text-muted-foreground text-xs"
+            >
+              {markingAllRead
+                ? 'Marking…'
+                : filter.feedId
+                  ? 'Mark feed as read'
+                  : 'Mark category as read'}
+            </Button>
+          </div>
+        )}
 
-      <div className="flex flex-col gap-0.5">
-        {items.map((item) => (
-          <FeedItemCard
-            key={item.id}
-            item={item}
-            showSource={showSource}
-            onMarkRead={handleMarkRead}
-            onMarkUnread={handleMarkUnread}
-          />
-        ))}
+        <div className="flex flex-col gap-0.5">
+          {items.map((item) => (
+            <FeedItemCard
+              key={item.id}
+              item={item}
+              showSource={showSource}
+              onMarkRead={handleMarkRead}
+              onMarkUnread={handleMarkUnread}
+              onOpenReader={openReader}
+            />
+          ))}
+        </div>
+
+        {hasMore && (
+          <div className="flex justify-center py-4">
+            <Button variant="outline" size="sm" onClick={loadMore} disabled={pending}>
+              {pending ? 'Loading…' : 'Load more'}
+            </Button>
+          </div>
+        )}
       </div>
 
-      {hasMore && (
-        <div className="flex justify-center py-4">
-          <Button variant="outline" size="sm" onClick={loadMore} disabled={pending}>
-            {pending ? 'Loading…' : 'Load more'}
-          </Button>
-        </div>
-      )}
-    </div>
+      <ReaderSheet
+        item={readerItem}
+        open={readerItemId !== null}
+        onOpenChange={(open) => { if (!open) setReaderItemId(null) }}
+        onPrev={readerIndex > 0 ? () => navigateReader('prev') : null}
+        onNext={readerIndex < readerItems.length - 1 ? () => navigateReader('next') : null}
+      />
+    </>
   )
 }
