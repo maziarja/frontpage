@@ -8,7 +8,6 @@ import { CreateCategoryModal } from '@/components/dashboard/create-category-moda
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  AlertCircleIcon,
   BookmarkIcon,
   ChevronRightIcon,
   FolderPlusIcon,
@@ -111,10 +110,9 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
             My Feeds
             {erroringCount > 0 && (
               <span
-                className="ml-1 flex items-center gap-0.5 text-xs text-destructive"
+                className="ml-1.5 rounded bg-destructive/15 px-1 py-0.5 text-[10px] font-medium leading-none text-destructive"
                 aria-label={`${erroringCount} feed${erroringCount !== 1 ? 's' : ''} with errors`}
               >
-                <AlertCircleIcon size={11} aria-hidden="true" />
                 {erroringCount}
               </span>
             )}

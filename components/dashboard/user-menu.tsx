@@ -47,14 +47,14 @@ export function UserMenu({ user }: UserMenuProps) {
         >
           {initials}
         </span>
-        <span className="truncate text-sm">{displayName}</span>
+        <span className="truncate text-sm capitalize">{displayName}</span>
         <span className="sr-only">User menu</span>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent side="top" align="start" className="w-56">
         <DropdownMenuGroup>
           <DropdownMenuLabel>
-            <p className="font-medium text-foreground">{displayName}</p>
+            <p className="font-medium capitalize text-foreground">{displayName}</p>
             {user?.email && (
               <p className="text-xs text-muted-foreground">{user.email}</p>
             )}
