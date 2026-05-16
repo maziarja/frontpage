@@ -6,6 +6,7 @@ export const feedFetchQuerySchema = z.object({
 
 export const addFeedSchema = z.object({
   url: z.url('Enter a valid URL'),
+  categoryId: z.string().trim().min(1).nullable().optional(),
 })
 
 export const editFeedSchema = z.object({

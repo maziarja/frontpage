@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 import { FeedItemList } from '@/components/dashboard/feed-item-list'
 import { FeedItemSkeleton } from '@/components/dashboard/feed-item-skeleton'
+import { CategoryPageActions } from '@/components/dashboard/category-page-actions'
 import { getCategoryPageData } from '@/app/_queries/category'
 
 export default async function CategoryPage({ params }: { params: Promise<{ id: string }> }) {
@@ -18,16 +19,18 @@ export default async function CategoryPage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="mx-auto max-w-[60rem] px-4 py-4">
-      <h1 className="mb-4 text-2xl font-semibold">{category.name}</h1>
-      <Suspense fallback={<FeedItemSkeleton />}>
-        <FeedItemList
-          initialItems={items}
-          initialHasMore={hasMore}
-          filter={{ categoryId: id }}
-          showSource
-          emptyMessage="No articles in this category yet."
-        />
-      </Suspense>
+      <CategoryPageActions category={category} />
+      <div className="mt-6 border-t pt-4">
+        <Suspense fallback={<FeedItemSkeleton />}>
+          <FeedItemList
+            initialItems={items}
+            initialHasMore={hasMore}
+            filter={{ categoryId: id }}
+            showSource
+            emptyMessage="No articles in this category yet."
+          />
+        </Suspense>
+      </div>
     </div>
   )
 }

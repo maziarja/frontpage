@@ -18,11 +18,14 @@ function getFaviconUrl(feedUrl: string): string | undefined {
   }
 }
 
-export async function addFeed(url: string): Promise<{ error: string } | void> {
+export async function addFeed(
+  url: string,
+  categoryId?: string | null,
+): Promise<{ error: string } | void> {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) return { error: 'Unauthorized' }
 
-  const parsed = addFeedSchema.safeParse({ url })
+  const parsed = addFeedSchema.safeParse({ url, categoryId })
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid URL' }
 
   const { url: validatedUrl } = parsed.data
@@ -65,6 +68,7 @@ export async function addFeed(url: string): Promise<{ error: string } | void> {
       faviconUrl: meta.faviconUrl ?? getFaviconUrl(finalUrl),
       healthStatus: FeedHealthStatus.ACTIVE,
       lastFetchedAt: new Date(),
+      categoryId: parsed.data.categoryId ?? null,
     },
   })
 

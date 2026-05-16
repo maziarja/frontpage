@@ -93,12 +93,16 @@ export function EditFeedForm({
                 onValueChange={(val) => field.onChange(val === '' ? undefined : val)}
               >
                 <SelectTrigger id="feed-category">
-                  <SelectValue placeholder="Uncategorized" />
+                  <SelectValue>
+                    {(value: string | null) =>
+                      value ? (categories.find((c) => c.id === value)?.name ?? 'Uncategorized') : 'Uncategorized'
+                    }
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Uncategorized</SelectItem>
+                  <SelectItem value="" label="Uncategorized">Uncategorized</SelectItem>
                   {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>
+                    <SelectItem key={cat.id} value={cat.id} label={cat.name}>
                       {cat.name}
                     </SelectItem>
                   ))}

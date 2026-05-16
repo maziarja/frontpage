@@ -3,12 +3,14 @@
 import { useState } from 'react'
 import { FeedFavicon } from '@/components/dashboard/feed-favicon'
 import { useUnreadCounts } from '@/components/dashboard/unread-count-context'
+import { SortableCategoryList } from '@/components/dashboard/sortable-category-list'
+import { CreateCategoryModal } from '@/components/dashboard/create-category-modal'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   BookmarkIcon,
   ChevronRightIcon,
-  FolderIcon,
+  FolderPlusIcon,
   LayoutListIcon,
   PlusIcon,
   RssIcon,
@@ -66,7 +68,9 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
   const { counts } = useUnreadCounts()
   const hasContent = categoriesWithFeeds.length > 0 || uncategorizedFeeds.length > 0
   const [addFeedOpen, setAddFeedOpen] = useState(false)
+  const [addCategoryOpen, setAddCategoryOpen] = useState(false)
   const [uncategorizedOpen, setUncategorizedOpen] = useState(true)
+
   return (
     <Sidebar>
       <SidebarHeader className="px-4 py-3">
@@ -103,51 +107,47 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
           <SidebarGroupAction onClick={() => setAddFeedOpen(true)} aria-label="Add feed">
             <PlusIcon />
           </SidebarGroupAction>
-          <AddFeedModal open={addFeedOpen} onOpenChange={setAddFeedOpen} />
+          <AddFeedModal
+            open={addFeedOpen}
+            onOpenChange={setAddFeedOpen}
+            categories={categoriesWithFeeds}
+          />
           <SidebarGroupContent>
             {!hasContent ? (
               <p className="text-muted-foreground px-2 py-1 text-sm">
-                No feeds yet. Click <PlusIcon size={12} className="inline" aria-hidden /> to add
-                one.
+                No feeds yet. Click <PlusIcon size={12} className="inline" aria-hidden /> to add one.
               </p>
             ) : (
-              <SidebarMenu>
-                {categoriesWithFeeds.map((category) => {
-                  const categoryUnread = category.feeds.reduce(
-                    (sum, f) => sum + (counts[f.id] ?? 0),
-                    0,
-                  )
-                  return (
-                    <SidebarMenuItem key={category.id}>
-                      <SidebarMenuButton
-                        render={<Link href={`/dashboard/category/${category.id}`} />}
-                        isActive={pathname === `/dashboard/category/${category.id}`}
-                        aria-current={
-                          pathname === `/dashboard/category/${category.id}` ? 'page' : undefined
-                        }
-                      >
-                        <FolderIcon />
-                        <span className="flex-1 truncate">{category.name}</span>
-                        <UnreadBadge count={categoryUnread} />
+              <>
+                <SortableCategoryList initialCategories={categoriesWithFeeds} />
+
+                {uncategorizedFeeds.length > 0 && (
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton onClick={() => setUncategorizedOpen((v) => !v)}>
+                        <RssIcon />
+                        <span className="flex-1 truncate">Uncategorized</span>
+                        <UnreadBadge
+                          count={uncategorizedFeeds.reduce((sum, f) => sum + (counts[f.id] ?? 0), 0)}
+                        />
+                        <ChevronRightIcon
+                          size={14}
+                          className={`shrink-0 transition-transform duration-200 ${uncategorizedOpen ? 'rotate-90' : ''}`}
+                          aria-hidden="true"
+                        />
                       </SidebarMenuButton>
-                      {category.feeds.length > 0 && (
+                      {uncategorizedOpen && (
                         <SidebarMenuSub>
-                          {category.feeds.map((feed) => (
+                          {uncategorizedFeeds.map((feed) => (
                             <SidebarMenuSubItem key={feed.id}>
                               <SidebarMenuSubButton
                                 render={<Link href={`/dashboard/feed/${feed.id}`} />}
                                 isActive={pathname === `/dashboard/feed/${feed.id}`}
-                                aria-current={
-                                  pathname === `/dashboard/feed/${feed.id}` ? 'page' : undefined
-                                }
                               >
                                 <FeedFavicon src={feed.faviconUrl} />
                                 <span className="flex-1 truncate">{feed.title}</span>
                                 {feed.healthStatus === 'ERROR' ? (
-                                  <span
-                                    className="ml-auto h-2 w-2 shrink-0 rounded-full bg-red-500"
-                                    aria-label="Feed error"
-                                  />
+                                  <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-red-500" aria-label="Feed error" />
                                 ) : (
                                   <UnreadBadge count={counts[feed.id] ?? 0} />
                                 )}
@@ -157,49 +157,23 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
                         </SidebarMenuSub>
                       )}
                     </SidebarMenuItem>
-                  )
-                })}
-
-                {uncategorizedFeeds.length > 0 && (
-                  <SidebarMenuItem>
-                    <SidebarMenuButton onClick={() => setUncategorizedOpen((v) => !v)}>
-                      <RssIcon />
-                      <span className="flex-1 truncate">Uncategorized</span>
-                      <UnreadBadge
-                        count={uncategorizedFeeds.reduce((sum, f) => sum + (counts[f.id] ?? 0), 0)}
-                      />
-                      <ChevronRightIcon
-                        size={14}
-                        className={`shrink-0 transition-transform duration-200 ${uncategorizedOpen ? 'rotate-90' : ''}`}
-                        aria-hidden="true"
-                      />
-                    </SidebarMenuButton>
-                    {uncategorizedOpen && (
-                      <SidebarMenuSub>
-                        {uncategorizedFeeds.map((feed) => (
-                          <SidebarMenuSubItem key={feed.id}>
-                            <SidebarMenuSubButton
-                              render={<Link href={`/dashboard/feed/${feed.id}`} />}
-                              isActive={pathname === `/dashboard/feed/${feed.id}`}
-                            >
-                              <FeedFavicon src={feed.faviconUrl} />
-                              <span className="flex-1 truncate">{feed.title}</span>
-                              {feed.healthStatus === 'ERROR' ? (
-                                <span
-                                  className="ml-auto h-2 w-2 shrink-0 rounded-full bg-red-500"
-                                  aria-label="Feed error"
-                                />
-                              ) : (
-                                <UnreadBadge count={counts[feed.id] ?? 0} />
-                              )}
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    )}
-                  </SidebarMenuItem>
+                  </SidebarMenu>
                 )}
-              </SidebarMenu>
+
+                {/* New category button */}
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      onClick={() => setAddCategoryOpen(true)}
+                      className="text-muted-foreground/70 hover:text-muted-foreground"
+                    >
+                      <FolderPlusIcon />
+                      <span>New category</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+                <CreateCategoryModal open={addCategoryOpen} onOpenChange={setAddCategoryOpen} />
+              </>
             )}
           </SidebarGroupContent>
         </SidebarGroup>
