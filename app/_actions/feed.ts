@@ -65,7 +65,7 @@ export async function addFeed(
       url: finalUrl,
       title: meta.title,
       description: meta.description,
-      faviconUrl: meta.faviconUrl ?? getFaviconUrl(finalUrl),
+      faviconUrl: getFaviconUrl(finalUrl),
       healthStatus: FeedHealthStatus.ACTIVE,
       lastFetchedAt: new Date(),
       categoryId: parsed.data.categoryId ?? null,
