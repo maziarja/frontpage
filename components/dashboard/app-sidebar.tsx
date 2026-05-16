@@ -8,6 +8,7 @@ import { CreateCategoryModal } from '@/components/dashboard/create-category-moda
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
+  AlertCircleIcon,
   BookmarkIcon,
   ChevronRightIcon,
   FolderPlusIcon,
@@ -71,6 +72,9 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
   const [addCategoryOpen, setAddCategoryOpen] = useState(false)
   const [uncategorizedOpen, setUncategorizedOpen] = useState(true)
 
+  const allFeeds = [...categoriesWithFeeds.flatMap((c) => c.feeds), ...uncategorizedFeeds]
+  const erroringCount = allFeeds.filter((f) => f.healthStatus === 'ERROR').length
+
   return (
     <Sidebar>
       <SidebarHeader className="px-4 py-3">
@@ -103,7 +107,18 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>My Feeds</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            My Feeds
+            {erroringCount > 0 && (
+              <span
+                className="ml-1 flex items-center gap-0.5 text-xs text-destructive"
+                aria-label={`${erroringCount} feed${erroringCount !== 1 ? 's' : ''} with errors`}
+              >
+                <AlertCircleIcon size={11} aria-hidden="true" />
+                {erroringCount}
+              </span>
+            )}
+          </SidebarGroupLabel>
           <SidebarGroupAction onClick={() => setAddFeedOpen(true)} aria-label="Add feed">
             <PlusIcon />
           </SidebarGroupAction>

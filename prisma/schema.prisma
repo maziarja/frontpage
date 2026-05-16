@@ -105,10 +105,13 @@ model Feed {
   description   String?
   faviconUrl    String?
   categoryId    String?
-  healthStatus  FeedHealthStatus @default(ACTIVE)
-  lastFetchedAt DateTime?
-  errorMessage  String?
-  etag          String?
+  healthStatus          FeedHealthStatus @default(ACTIVE)
+  lastFetchedAt         DateTime?
+  lastSuccessfulFetchAt DateTime?
+  errorMessage          String?
+  retryCount            Int              @default(0)
+  nextRetryAt           DateTime?
+  etag                  String?
   lastModified  String?
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt

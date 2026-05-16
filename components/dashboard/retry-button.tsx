@@ -21,12 +21,12 @@ export function RetryButton({ feedId }: { feedId: string }) {
         toast.success(
           data.cached ? 'Feed is up to date' : `Fetched ${data.newItemCount} new item(s)`,
         )
-        router.refresh()
       }
     } catch {
       toast.error('Could not reach the server')
     } finally {
       setPending(false)
+      router.refresh()
     }
   }
 

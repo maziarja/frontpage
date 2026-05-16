@@ -4,6 +4,7 @@ import { db } from '@/db'
 import { feedFetchQuerySchema } from '@/schemas/feed'
 import { parseFeed } from '@/lib/feed-parser'
 import { FeedHealthStatus } from '@/lib/generated/prisma/client'
+import { calculateNextRetryAt } from '@/lib/feed-retry'
 
 export async function GET(request: Request) {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -49,6 +50,8 @@ export async function GET(request: Request) {
           healthStatus: FeedHealthStatus.ERROR,
           errorMessage: `HTTP ${response.status}: ${response.statusText}`,
           lastFetchedAt: new Date(),
+          retryCount: (feed.retryCount ?? 0) + 1,
+          nextRetryAt: calculateNextRetryAt(feed.retryCount ?? 0),
         },
       })
       return Response.json(
@@ -69,6 +72,8 @@ export async function GET(request: Request) {
           healthStatus: FeedHealthStatus.ERROR,
           errorMessage: 'Failed to parse feed XML',
           lastFetchedAt: new Date(),
+          retryCount: (feed.retryCount ?? 0) + 1,
+          nextRetryAt: calculateNextRetryAt(feed.retryCount ?? 0),
         },
       })
       return Response.json({ error: 'Failed to parse feed XML' }, { status: 422 })
@@ -84,7 +89,10 @@ export async function GET(request: Request) {
       data: {
         healthStatus: FeedHealthStatus.ACTIVE,
         lastFetchedAt: new Date(),
+        lastSuccessfulFetchAt: new Date(),
         errorMessage: null,
+        retryCount: 0,
+        nextRetryAt: null,
         etag: response.headers.get('etag')?.trim() ?? undefined,
         lastModified: response.headers.get('last-modified')?.trim() ?? undefined,
         ...(response.url !== feed.url ? { url: response.url } : {}),
@@ -102,6 +110,8 @@ export async function GET(request: Request) {
         healthStatus: FeedHealthStatus.ERROR,
         errorMessage,
         lastFetchedAt: new Date(),
+        retryCount: feed.retryCount + 1,
+        nextRetryAt: calculateNextRetryAt(feed.retryCount),
       },
     })
 

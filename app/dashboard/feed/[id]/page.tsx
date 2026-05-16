@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth'
 import { formatDistanceToNow } from 'date-fns'
 import { FeedHealthBadge } from '@/components/dashboard/feed-health-badge'
 import { RetryButton } from '@/components/dashboard/retry-button'
+import { FeedErrorDetails } from '@/components/dashboard/feed-error-details'
 import { FeedPageActions } from '@/components/dashboard/feed-page-actions'
 import { FeedItemList } from '@/components/dashboard/feed-item-list'
 import { FeedItemSkeleton } from '@/components/dashboard/feed-item-skeleton'
@@ -17,8 +18,7 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
 
   const data = await getFeedPageData(session.user.id, id)
   if (!data) notFound()
-  const { feed, categories, items, hasMore, itemCount, showRetry } = data
-
+  const { feed, categories, items, hasMore, itemCount } = data
   return (
     <div className="mx-auto max-w-[60rem] px-4 py-4">
       <FeedPageActions feed={feed} categories={categories}>
@@ -27,22 +27,22 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
           <span className="text-muted-foreground text-sm">
             {itemCount} article{items.length !== 1 ? 's' : ''}
           </span>
-          {feed.lastFetchedAt && (
+          {feed.lastSuccessfulFetchAt && feed.healthStatus !== 'ERROR' && (
             <span className="text-muted-foreground text-sm">
-              Last fetched {formatDistanceToNow(feed.lastFetchedAt, { addSuffix: true })}
+              Last fetched {formatDistanceToNow(feed.lastSuccessfulFetchAt, { addSuffix: true })}
             </span>
           )}
-          {showRetry && <RetryButton feedId={feed.id} />}
+          {feed.healthStatus !== 'ERROR' && <RetryButton feedId={feed.id} />}
         </div>
 
-        {feed.errorMessage && (
-          <div
-            className="bg-destructive/10 text-destructive mt-4 rounded-md p-3 text-sm"
-            role="alert"
-            aria-label="Feed error"
-          >
-            {feed.errorMessage}
-          </div>
+        {feed.healthStatus === 'ERROR' && (
+          <FeedErrorDetails
+            feedId={feed.id}
+            errorMessage={feed.errorMessage}
+            lastSuccessfulFetchAt={feed.lastSuccessfulFetchAt}
+            nextRetryAt={feed.nextRetryAt}
+            retryCount={feed.retryCount}
+          />
         )}
       </FeedPageActions>
       <div className="mt-6 border-t pt-4">

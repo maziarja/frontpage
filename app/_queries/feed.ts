@@ -32,9 +32,27 @@ export async function getFeedPageData(userId: string, feedId: string) {
   const items = rawItems.slice(0, PAGE_SIZE).map(mapFeedItem)
   const itemCount = rawItems.length > PAGE_SIZE ? `${PAGE_SIZE}+` : String(rawItems.length)
   const showRetry =
-    feed.healthStatus === FeedHealthStatus.ERROR ||
     feed.healthStatus === FeedHealthStatus.STALE ||
     (feed.lastFetchedAt !== null && isAfter(subDays(new Date(), 30), feed.lastFetchedAt))
 
   return { feed, categories, items, hasMore, itemCount, showRetry }
+}
+
+export type FeedHealthSummary = {
+  total: number
+  healthy: number
+  erroring: number
+}
+
+export async function getFeedHealthSummary(userId: string): Promise<FeedHealthSummary> {
+  const counts = await db.feed.groupBy({
+    by: ['healthStatus'],
+    where: { userId },
+    _count: { id: true },
+  })
+
+  const total = counts.reduce((sum, g) => sum + g._count.id, 0)
+  const erroring = counts.find((g) => g.healthStatus === FeedHealthStatus.ERROR)?._count.id ?? 0
+
+  return { total, healthy: total - erroring, erroring }
 }
