@@ -28,6 +28,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  useSidebar,
 } from '@/components/ui/sidebar'
 import { FeedFavicon } from '@/components/dashboard/feed-favicon'
 import { useUnreadCounts } from '@/components/dashboard/unread-count-context'
@@ -58,8 +59,13 @@ function UnreadBadge({ count }: { count: number }) {
 function SortableCategoryItem({ category }: { category: SidebarCategory }) {
   const pathname = usePathname()
   const { counts } = useUnreadCounts()
+  const { isMobile, setOpenMobile } = useSidebar()
   const categoryUnread = category.feeds.reduce((sum, f) => sum + (counts[f.id] ?? 0), 0)
   const [open, setOpen] = useState(true)
+
+  function closeMobileSidebar() {
+    if (isMobile) setOpenMobile(false)
+  }
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: category.id,
@@ -85,7 +91,7 @@ function SortableCategoryItem({ category }: { category: SidebarCategory }) {
             <GripVerticalIcon size={12} />
           </button>
           <SidebarMenuButton
-            render={<Link href={`/dashboard/category/${category.id}`} />}
+            render={<Link href={`/dashboard/category/${category.id}`} onClick={closeMobileSidebar} />}
             isActive={pathname === `/dashboard/category/${category.id}`}
             aria-current={pathname === `/dashboard/category/${category.id}` ? 'page' : undefined}
             className="flex-1"
@@ -112,7 +118,7 @@ function SortableCategoryItem({ category }: { category: SidebarCategory }) {
             {category.feeds.map((feed) => (
               <SidebarMenuSubItem key={feed.id}>
                 <SidebarMenuSubButton
-                  render={<Link href={`/dashboard/feed/${feed.id}`} />}
+                  render={<Link href={`/dashboard/feed/${feed.id}`} onClick={closeMobileSidebar} />}
                   isActive={pathname === `/dashboard/feed/${feed.id}`}
                   aria-current={pathname === `/dashboard/feed/${feed.id}` ? 'page' : undefined}
                 >
