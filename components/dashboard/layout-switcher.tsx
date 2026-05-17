@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { AlignJustifyIcon, LayoutGridIcon, LayoutListIcon } from 'lucide-react'
 import { Layout } from '@/lib/generated/prisma/enums'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -13,10 +14,11 @@ const LAYOUTS: { value: Layout; label: string; icon: React.ReactNode }[] = [
 
 export function LayoutSwitcher() {
   const { layout, setLayout } = useLayout()
+  const [open, setOpen] = useState(false)
   const activeIcon = LAYOUTS.find((l) => l.value === layout)?.icon ?? <LayoutListIcon size={18} />
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         aria-label="Switch layout"
         title="Switch layout"
@@ -28,7 +30,10 @@ export function LayoutSwitcher() {
         {LAYOUTS.map(({ value, label, icon }) => (
           <button
             key={value}
-            onClick={() => setLayout(value)}
+            onClick={() => {
+              setLayout(value)
+              setOpen(false)
+            }}
             className={`flex w-full items-center gap-2.5 rounded-sm px-2.5 py-1.5 text-sm transition-colors ${
               layout === value
                 ? 'bg-muted text-foreground font-medium'
