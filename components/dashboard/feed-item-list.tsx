@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { Layout } from '@/lib/generated/prisma/enums'
 import { Button } from '@/components/ui/button'
 import { FeedItemCard } from '@/components/dashboard/feed-item-card'
 import { ReaderSheet } from '@/components/dashboard/reader-sheet'
 import { useUnreadCounts } from '@/components/dashboard/unread-count-context'
+import { useLayout } from '@/components/dashboard/layout-context'
 import { getMoreFeedItems } from '@/app/_actions/feed-items'
 import {
   markItemRead,
@@ -33,6 +35,7 @@ export function FeedItemList({
   emptyMessage = 'No articles yet.',
 }: Props) {
   const { increment, decrement, reset } = useUnreadCounts()
+  const { layout } = useLayout()
   const [items, setItems] = useState(initialItems)
   const [hasMore, setHasMore] = useState(initialHasMore)
   const [pending, startTransition] = useTransition()
@@ -143,11 +146,18 @@ export function FeedItemList({
           </div>
         )}
 
-        <div className="flex flex-col gap-0.5">
+        <div
+          className={
+            layout === Layout.CARD
+              ? 'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'
+              : 'flex flex-col gap-0.5'
+          }
+        >
           {items.map((item) => (
             <FeedItemCard
               key={item.id}
               item={item}
+              layout={layout}
               showSource={showSource}
               onMarkRead={handleMarkRead}
               onMarkUnread={handleMarkUnread}
