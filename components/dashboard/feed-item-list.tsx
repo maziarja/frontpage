@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import { Layout } from '@/lib/generated/prisma/enums'
 import { Button } from '@/components/ui/button'
 import { FeedItemCard } from '@/components/dashboard/feed-item-card'
@@ -38,6 +38,16 @@ export function FeedItemList({
   const { layout } = useLayout()
   const [items, setItems] = useState(initialItems)
   const [hasMore, setHasMore] = useState(initialHasMore)
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setItems((prev) => {
+      const existingIds = new Set(prev.map((i) => i.id))
+      const newItems = initialItems.filter((i) => !existingIds.has(i.id))
+      if (newItems.length === 0) return prev
+      return [...newItems, ...prev]
+    })
+  }, [initialItems])
   const [pending, startTransition] = useTransition()
   const [markingAllRead, setMarkingAllRead] = useState(false)
   const [readerItemId, setReaderItemId] = useState<string | null>(null)
@@ -178,7 +188,9 @@ export function FeedItemList({
       <ReaderSheet
         item={readerItem}
         open={readerItemId !== null}
-        onOpenChange={(open) => { if (!open) setReaderItemId(null) }}
+        onOpenChange={(open) => {
+          if (!open) setReaderItemId(null)
+        }}
         onPrev={readerIndex > 0 ? () => navigateReader('prev') : null}
         onNext={readerIndex < readerItems.length - 1 ? () => navigateReader('next') : null}
       />
