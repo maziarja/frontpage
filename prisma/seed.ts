@@ -6,8 +6,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient, FeedHealthStatus } from '../lib/generated/prisma/client'
 import { parseFeedMeta, parseFeed } from '../lib/feed-parser'
 import sampleFeeds from '../data/sample-feeds.json'
-
-const DEMO_EMAIL = 'demo@frontpage.internal'
+import { DEMO_USER_EMAIL } from '../lib/const'
 
 function getFaviconUrl(feedUrl: string): string {
   const { hostname } = new URL(feedUrl)
@@ -21,12 +20,12 @@ async function main() {
   console.log('Seeding demo account…\n')
 
   const user = await db.user.upsert({
-    where: { email: DEMO_EMAIL },
+    where: { email: DEMO_USER_EMAIL },
     update: {},
     create: {
       id: 'demo-user',
       name: 'Demo',
-      email: DEMO_EMAIL,
+      email: DEMO_USER_EMAIL,
       emailVerified: false,
     },
   })
