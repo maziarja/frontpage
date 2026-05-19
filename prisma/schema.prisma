@@ -180,10 +180,11 @@ enum Theme {
 }
 
 model UserPreference {
-  userId          String @id
-  layout          Layout @default(STANDARD)
-  refreshInterval Int    @default(30)
-  theme           Theme  @default(SYSTEM)
+  userId               String  @id
+  layout               Layout  @default(STANDARD)
+  refreshInterval      Int     @default(30)
+  theme                Theme   @default(SYSTEM)
+  onboardingDismissed  Boolean @default(false)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

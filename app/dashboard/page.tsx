@@ -5,18 +5,19 @@ import { FeedHealthSummaryBanner } from '@/components/dashboard/feed-health-summ
 import { OnboardingEmptyState } from '@/components/dashboard/onboarding-empty-state'
 import { getDashboardItems } from '@/app/_queries/dashboard'
 import { getFeedHealthSummary } from '@/app/_queries/feed'
+import { getUserPreferences } from '@/app/_queries/preferences'
 import { requireDashboardSession } from '@/lib/dashboard-session'
 
 export default async function DashboardPage() {
-  const { isGuest, userId, cookieStore } = await requireDashboardSession()
+  const { isGuest, userId } = await requireDashboardSession()
 
-  const onboardingDismissed = cookieStore.get('onboarding-dismissed')?.value === 'true'
-  const showOnboarding = !isGuest && !onboardingDismissed
-
-  const [{ items, hasMore, totalFeedCount }, summary] = await Promise.all([
+  const [{ items, hasMore, totalFeedCount }, summary, prefs] = await Promise.all([
     getDashboardItems(userId),
     getFeedHealthSummary(userId),
+    userId && !isGuest ? getUserPreferences(userId) : Promise.resolve(null),
   ])
+
+  const showOnboarding = !isGuest && !(prefs?.onboardingDismissed ?? false)
 
   if (showOnboarding && totalFeedCount === 0) {
     return <OnboardingEmptyState isGuest={false} />
