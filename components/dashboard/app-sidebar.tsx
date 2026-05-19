@@ -12,6 +12,7 @@ import {
   ChevronRightIcon,
   FolderPlusIcon,
   LayoutListIcon,
+  NewspaperIcon,
   PlusIcon,
   RssIcon,
 } from 'lucide-react'
@@ -52,8 +53,9 @@ type AppSidebarProps = {
 }
 
 const topNavItems = [
-  { label: 'All Items', href: '/dashboard', icon: LayoutListIcon },
-  { label: 'Saved', href: '/dashboard/saved', icon: BookmarkIcon },
+  { label: 'All Items', href: '/dashboard',        icon: LayoutListIcon },
+  { label: 'Digest',    href: '/dashboard/digest', icon: NewspaperIcon },
+  { label: 'Saved',     href: '/dashboard/saved',  icon: BookmarkIcon },
 ]
 
 function UnreadBadge({ count }: { count: number }) {
