@@ -15,13 +15,6 @@ export function SavedItemsView({ initialItems }: Props) {
 
   const effectiveItems = initialItems.filter((i) => !unbookmarkedIds.has(i.id))
 
-  const filtered = query.trim()
-    ? effectiveItems.filter((item) =>
-        item.title.toLowerCase().includes(query.toLowerCase()) ||
-        (item.description ?? '').toLowerCase().includes(query.toLowerCase())
-      )
-    : effectiveItems
-
   function handleUnbookmark(id: string) {
     setUnbookmarkedIds((prev) => new Set([...prev, id]))
   }
@@ -50,19 +43,16 @@ export function SavedItemsView({ initialItems }: Props) {
         />
       </div>
 
-      {filtered.length === 0 ? (
-        <p className="text-muted-foreground py-8 text-center text-sm">No articles match your search.</p>
-      ) : (
-        <FeedItemList
-          initialItems={filtered}
-          initialHasMore={false}
-          filter={{}}
-          showSource
-          emptyMessage="No saved articles."
-          hideUnbookmarked
-          onUnbookmark={handleUnbookmark}
-        />
-      )}
+      <FeedItemList
+        initialItems={effectiveItems}
+        initialHasMore={false}
+        filter={{}}
+        showSource
+        emptyMessage="No articles match your search."
+        hideUnbookmarked
+        onUnbookmark={handleUnbookmark}
+        searchQuery={query}
+      />
     </div>
   )
 }

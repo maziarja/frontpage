@@ -23,6 +23,7 @@ type Props = {
   emptyMessage?: string
   hideUnbookmarked?: boolean
   onUnbookmark?: (id: string) => void
+  searchQuery?: string
 }
 
 export function FeedItemList({
@@ -33,6 +34,7 @@ export function FeedItemList({
   emptyMessage = 'No articles yet.',
   hideUnbookmarked = false,
   onUnbookmark,
+  searchQuery = '',
 }: Props) {
   const { layout } = useLayout()
   const isGuest = useGuest()
@@ -93,7 +95,13 @@ export function FeedItemList({
     handleToggleBookmark(id)
   }
 
-  const visibleItems = hideUnbookmarked ? items.filter((i) => i.isBookmarked) : items
+  let visibleItems = hideUnbookmarked ? items.filter((i) => i.isBookmarked) : items
+  if (searchQuery.trim()) {
+    const q = searchQuery.toLowerCase()
+    visibleItems = visibleItems.filter(
+      (i) => i.title.toLowerCase().includes(q) || (i.description ?? '').toLowerCase().includes(q)
+    )
+  }
   const hasUnread = items.some((item) => !item.isRead)
   const isFiltered = Boolean(filter.feedId ?? filter.categoryId)
 
