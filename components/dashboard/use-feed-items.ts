@@ -53,6 +53,10 @@ export function useFeedItems(initialItems: FeedItemRow[]) {
     })
   }
 
+  function updateItemSummary(id: string, summary: string, tags: string[]) {
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, summary, tags } : i)))
+  }
+
   function openReader(id: string) {
     setReaderItemId(id)
   }
@@ -71,6 +75,7 @@ export function useFeedItems(initialItems: FeedItemRow[]) {
     setItems,
     handleMarkRead,
     handleMarkUnread,
+    updateItemSummary,
     openReader,
     navigateReader,
     readerItem,

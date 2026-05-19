@@ -23,6 +23,7 @@ export function DigestCategorySection({ categoryId, categoryName, initialItems }
     setItems,
     handleMarkRead,
     handleMarkUnread,
+    updateItemSummary,
     openReader,
     navigateReader,
     readerItem,
@@ -102,6 +103,7 @@ export function DigestCategorySection({ categoryId, categoryName, initialItems }
         }}
         onPrev={readerIndex > 0 ? () => navigateReader('prev') : null}
         onNext={readerIndex < readerItems.length - 1 ? () => navigateReader('next') : null}
+        onSummaryGenerated={updateItemSummary}
       />
     </div>
   )

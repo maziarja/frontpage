@@ -35,6 +35,7 @@ export function FeedItemList({
     setItems,
     handleMarkRead,
     handleMarkUnread,
+    updateItemSummary,
     openReader,
     navigateReader,
     readerItem,
@@ -139,6 +140,7 @@ export function FeedItemList({
         }}
         onPrev={readerIndex > 0 ? () => navigateReader('prev') : null}
         onNext={readerIndex < readerItems.length - 1 ? () => navigateReader('next') : null}
+        onSummaryGenerated={updateItemSummary}
       />
     </>
   )

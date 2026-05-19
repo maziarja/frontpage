@@ -13,9 +13,10 @@ type Props = {
   onOpenChange: (open: boolean) => void
   onPrev: (() => void) | null
   onNext: (() => void) | null
+  onSummaryGenerated?: (id: string, summary: string, tags: string[]) => void
 }
 
-export function ReaderSheet({ item, open, onOpenChange, onPrev, onNext }: Props) {
+export function ReaderSheet({ item, open, onOpenChange, onPrev, onNext, onSummaryGenerated }: Props) {
   if (!item) return null
 
   const date = item.publishedAt ?? item.createdAt
@@ -88,6 +89,7 @@ export function ReaderSheet({ item, open, onOpenChange, onPrev, onNext }: Props)
                 initialSummary={item.summary}
                 initialTags={item.tags}
                 variant="reader"
+                onSummaryGenerated={onSummaryGenerated}
               />
             </div>
           )}

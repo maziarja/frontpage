@@ -13,41 +13,14 @@ type Props = {
   initialSummary: string | null
   initialTags?: string[]
   variant: 'card' | 'reader'
+  onSummaryGenerated?: (id: string, summary: string, tags: string[]) => void
 }
 
-const CACHE_KEY = (id: string) => `ai-summary:${id}`
-
-function readCache(feedItemId: string): { summary: string; tags: string[] } | null {
-  try {
-    const raw = sessionStorage.getItem(CACHE_KEY(feedItemId))
-    return raw ? JSON.parse(raw) : null
-  } catch {
-    return null
-  }
-}
-
-function writeCache(feedItemId: string, summary: string, tags: string[]) {
-  try {
-    sessionStorage.setItem(CACHE_KEY(feedItemId), JSON.stringify({ summary, tags }))
-  } catch {}
-}
-
-export function SummarizeButton({ feedItemId, initialSummary, initialTags = [], variant }: Props) {
+export function SummarizeButton({ feedItemId, initialSummary, initialTags = [], variant, onSummaryGenerated }: Props) {
   const router = useRouter()
-
-  const [state, setState] = useState<State>(() => {
-    if (initialSummary) return 'done'
-    const cached = readCache(feedItemId)
-    return cached ? 'done' : 'idle'
-  })
-  const [summary, setSummary] = useState<string | null>(() => {
-    if (initialSummary) return initialSummary
-    return readCache(feedItemId)?.summary ?? null
-  })
-  const [tags, setTags] = useState<string[]>(() => {
-    if (initialTags.length > 0) return initialTags
-    return readCache(feedItemId)?.tags ?? []
-  })
+  const [state, setState] = useState<State>(initialSummary ? 'done' : 'idle')
+  const [summary, setSummary] = useState(initialSummary)
+  const [tags, setTags] = useState(initialTags)
 
   async function handleSummarize() {
     setState('loading')
@@ -55,10 +28,10 @@ export function SummarizeButton({ feedItemId, initialSummary, initialTags = [], 
     if ('error' in result) {
       setState(result.error === 'rate_limit' ? 'rate_limited' : 'error')
     } else {
-      writeCache(feedItemId, result.summary, result.tags)
       setSummary(result.summary)
       setTags(result.tags)
       setState('done')
+      onSummaryGenerated?.(feedItemId, result.summary, result.tags)
       router.refresh()
     }
   }
