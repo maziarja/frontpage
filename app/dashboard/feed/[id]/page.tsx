@@ -1,9 +1,7 @@
 import { Suspense } from 'react'
-import { notFound, redirect } from 'next/navigation'
-import { cookies, headers } from 'next/headers'
-import { auth } from '@/lib/auth'
-import { getDemoUserId } from '@/lib/demo-user'
+import { notFound } from 'next/navigation'
 import { formatDistanceToNow } from 'date-fns'
+import { requireDashboardSession } from '@/lib/dashboard-session'
 import { FeedHealthBadge } from '@/components/dashboard/feed-health-badge'
 import { RetryButton } from '@/components/dashboard/retry-button'
 import { FeedErrorDetails } from '@/components/dashboard/feed-error-details'
@@ -14,14 +12,8 @@ import { getFeedPageData } from '@/app/_queries/feed'
 
 export default async function FeedPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const session = await auth.api.getSession({ headers: await headers() })
-  const cookieStore = await cookies()
-  const isGuest = cookieStore.get('guest-session')?.value === 'true'
-  if (!session && !isGuest) redirect('/sign-in')
-
-  const demoUserId = isGuest ? await getDemoUserId() : null
-  const userId = session?.user.id ?? demoUserId
-  if (!userId) redirect('/sign-in')
+  const { isGuest, userId } = await requireDashboardSession()
+  if (!userId) notFound()
 
   const data = await getFeedPageData(userId, id)
   if (!data) notFound()

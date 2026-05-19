@@ -1,24 +1,14 @@
 import { Suspense } from 'react'
-import { redirect } from 'next/navigation'
-import { cookies, headers } from 'next/headers'
-import { auth } from '@/lib/auth'
 import { FeedItemList } from '@/components/dashboard/feed-item-list'
 import { FeedItemSkeleton } from '@/components/dashboard/feed-item-skeleton'
 import { FeedHealthSummaryBanner } from '@/components/dashboard/feed-health-summary-banner'
 import { OnboardingEmptyState } from '@/components/dashboard/onboarding-empty-state'
 import { getDashboardItems } from '@/app/_queries/dashboard'
 import { getFeedHealthSummary } from '@/app/_queries/feed'
-import { getDemoUserId } from '@/lib/demo-user'
+import { requireDashboardSession } from '@/lib/dashboard-session'
 
 export default async function DashboardPage() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  const cookieStore = await cookies()
-  const isGuest = cookieStore.get('guest-session')?.value === 'true'
-
-  if (!session && !isGuest) redirect('/sign-in')
-
-  const demoUserId = isGuest ? await getDemoUserId() : null
-  const userId = session?.user.id ?? demoUserId
+  const { isGuest, userId, cookieStore } = await requireDashboardSession()
 
   const onboardingDismissed = cookieStore.get('onboarding-dismissed')?.value === 'true'
   const showOnboarding = !isGuest && !onboardingDismissed

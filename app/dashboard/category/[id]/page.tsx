@@ -1,8 +1,6 @@
 import { Suspense } from 'react'
-import { notFound, redirect } from 'next/navigation'
-import { cookies, headers } from 'next/headers'
-import { auth } from '@/lib/auth'
-import { getDemoUserId } from '@/lib/demo-user'
+import { notFound } from 'next/navigation'
+import { requireDashboardSession } from '@/lib/dashboard-session'
 import { FeedItemList } from '@/components/dashboard/feed-item-list'
 import { FeedItemSkeleton } from '@/components/dashboard/feed-item-skeleton'
 import { CategoryPageActions } from '@/components/dashboard/category-page-actions'
@@ -10,14 +8,8 @@ import { getCategoryPageData } from '@/app/_queries/category'
 
 export default async function CategoryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const session = await auth.api.getSession({ headers: await headers() })
-  const cookieStore = await cookies()
-  const isGuest = cookieStore.get('guest-session')?.value === 'true'
-  if (!session && !isGuest) redirect('/sign-in')
-
-  const demoUserId = isGuest ? await getDemoUserId() : null
-  const userId = session?.user.id ?? demoUserId
-  if (!userId) redirect('/sign-in')
+  const { isGuest, userId } = await requireDashboardSession()
+  if (!userId) notFound()
 
   const data = await getCategoryPageData(userId, id)
   if (!data) notFound()

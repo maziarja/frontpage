@@ -1,6 +1,3 @@
-import { cookies, headers } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { auth } from '@/lib/auth'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { TopNav } from '@/components/dashboard/top-nav'
@@ -10,17 +7,10 @@ import { LayoutProvider } from '@/components/dashboard/layout-context'
 import { Layout } from '@/lib/generated/prisma/enums'
 import { getLayoutSidebarData } from '@/app/_queries/layout'
 import { getUserLayout } from '@/app/_queries/preferences'
-import { getDemoUserId } from '@/lib/demo-user'
+import { requireDashboardSession } from '@/lib/dashboard-session'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth.api.getSession({ headers: await headers() })
-  const cookieStore = await cookies()
-  const isGuest = cookieStore.get('guest-session')?.value === 'true'
-
-  if (!session && !isGuest) redirect('/sign-in')
-
-  const demoUserId = isGuest ? await getDemoUserId() : null
-  const userId = session?.user.id ?? demoUserId
+  const { session, isGuest, userId } = await requireDashboardSession()
   const user = session
     ? { id: session.user.id, name: session.user.name, email: session.user.email }
     : null
