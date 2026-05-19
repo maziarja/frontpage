@@ -77,7 +77,10 @@ export function FeedItemList({
     if (!cursor) return
     startTransition(async () => {
       const next = await getMoreFeedItems(cursor, filter)
-      setItems((prev) => [...prev, ...next])
+      setItems((prev) => {
+        const existingIds = new Set(prev.map((i) => i.id))
+        return [...prev, ...next.filter((i) => !existingIds.has(i.id))]
+      })
       setHasMore(next.length === PAGE_SIZE)
     })
   }
