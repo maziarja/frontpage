@@ -184,8 +184,10 @@ model UserPreference {
   layout               Layout  @default(STANDARD)
   refreshInterval      Int     @default(30)
   theme                Theme   @default(SYSTEM)
-  onboardingDismissed  Boolean   @default(false)
-  lastVisitedAt        DateTime?
+  onboardingDismissed   Boolean   @default(false)
+  lastVisitedAt         DateTime?
+  summaryRequestsToday  Int       @default(0)
+  summaryLastResetAt    DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

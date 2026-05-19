@@ -4,6 +4,7 @@ import { format, formatDistanceToNow } from 'date-fns'
 import { ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon, XIcon } from 'lucide-react'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
 import { FeedFavicon } from '@/components/dashboard/feed-favicon'
+import { SummarizeButton } from '@/components/dashboard/summarize-button'
 import type { FeedItemRow } from '@/lib/feed-items'
 
 type Props = {
@@ -77,6 +78,19 @@ export function ReaderSheet({ item, open, onOpenChange, onPrev, onNext }: Props)
               {formatDistanceToNow(date, { addSuffix: true })}
             </time>
           </div>
+
+          {/* AI Summary */}
+          {(item.content || item.description) && (
+            <div className="mb-8">
+              <SummarizeButton
+                key={item.id}
+                feedItemId={item.id}
+                initialSummary={item.summary}
+                initialTags={item.tags}
+                variant="reader"
+              />
+            </div>
+          )}
 
           {/* Article content */}
           {item.content ? (

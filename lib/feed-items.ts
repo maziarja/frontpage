@@ -11,6 +11,8 @@ export type FeedItemRow = {
   publishedAt: Date | null
   createdAt: Date
   isRead: boolean
+  summary: string | null
+  tags: string[]
   feed: { id: string; title: string; faviconUrl: string | null }
 }
 
@@ -23,6 +25,8 @@ type FeedItemWithReadCount = {
   author: string | null
   publishedAt: Date | null
   createdAt: Date
+  summary: string | null
+  tags: string[]
   feed: { id: string; title: string; faviconUrl: string | null }
   _count: { readStates: number }
 }
@@ -63,6 +67,8 @@ export function mapFeedItem(item: FeedItemWithReadCount): FeedItemRow {
     publishedAt: item.publishedAt,
     createdAt: item.createdAt,
     isRead: item._count.readStates > 0,
+    summary: item.summary,
+    tags: item.tags,
     feed: item.feed,
   }
 }

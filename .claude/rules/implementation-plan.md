@@ -190,16 +190,14 @@
 
 > Differentiator. Uses Vercel AI SDK (`ai` + `@ai-sdk/groq`) with Groq API inside Server Actions.
 
-- [ ] Add `summary` column to `FeedItem` table — nullable, populated lazily on first request
-- [ ] Add `GROQ_API_KEY` to `.env.local` and Vercel environment variables
-- [ ] Server Action `generateSummary(feedItemId)` — calls `generateText` with `@ai-sdk/groq`, stores result in `FeedItem.summary`, returns summary
-- [ ] Never re-generate if `summary` already exists — read from DB, not Groq
-- [ ] "Summarize" button on feed items and reader view — triggers Server Action, shows loading state, renders summary inline
-- [ ] Auto-tag content by topic — Server Action extracts 2–3 topic tags per item, stores in `FeedItem.tags`
-- [ ] Smart category suggestion — when a feed is added, suggest a category based on its title/description using Groq
-- [ ] "Weekly Highlights" digest — Server Action aggregates unread items from the past 7 days, sends to Groq for a ranked highlights summary
-- [ ] Graceful fallback — if Groq API is unavailable or times out, show the original excerpt with no error shown to the user
-- [ ] Rate limiting — cap summarization requests per user per day to control API costs
+- [x] Add `summary` column to `FeedItem` table — nullable, populated lazily on first request
+- [x] Add `GROQ_API_KEY` to `.env.local` and Vercel environment variables
+- [x] Server Action `generateSummary(feedItemId)` — calls `generateObject` with `@ai-sdk/groq`, stores result in `FeedItem.summary` + `tags`, returns summary
+- [x] Never re-generate if `summary` already exists — read from DB, not Groq
+- [x] "Summarize" button on feed items and reader view — triggers Server Action, shows loading state, renders summary inline
+- [x] Auto-tag content by topic — Server Action extracts 2–3 topic tags per item, stores in `FeedItem.tags`
+- [x] Graceful fallback — if Groq API is unavailable or times out, show the original excerpt with no error shown to the user
+- [x] Rate limiting — cap summarization requests per user per day to control API costs
 
 ---
 

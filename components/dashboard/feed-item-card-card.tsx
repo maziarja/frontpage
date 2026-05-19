@@ -40,10 +40,10 @@ export function FeedItemCardCard({ item, showSource = false, onMarkRead, onMarkU
     if (!hasUrl) onOpenReader?.(item.id)
   }
 
-  const inner = (
-    <div className={`group-hover:border-primary flex h-full flex-col overflow-hidden rounded-lg border transition-all duration-200 ${item.isRead ? 'opacity-60' : ''}`}>
+  const clickableContent = (
+    <>
       {imageUrl && (
-        <div className="bg-muted aspect-video w-full overflow-hidden">
+        <div className="bg-muted aspect-video w-full overflow-hidden rounded-t-lg">
           <img
             src={imageUrl}
             alt=""
@@ -86,20 +86,21 @@ export function FeedItemCardCard({ item, showSource = false, onMarkRead, onMarkU
           </span>
         )}
       </div>
-    </div>
+    </>
   )
 
   return (
-    <div className="group relative">
+    <div className={`group relative flex flex-col rounded-lg border transition-all duration-200 group-hover:border-primary ${item.isRead ? 'opacity-80' : ''}`}>
       {hasUrl ? (
-        <a href={item.url} target="_blank" rel="noopener noreferrer" onClick={handleOpen}>
-          {inner}
+        <a href={item.url} target="_blank" rel="noopener noreferrer" onClick={handleOpen} className="flex flex-1 flex-col">
+          {clickableContent}
         </a>
       ) : hasContent ? (
-        <button onClick={handleOpen} className="w-full text-left">{inner}</button>
+        <button onClick={handleOpen} className="flex flex-1 flex-col w-full text-left">{clickableContent}</button>
       ) : (
-        <div>{inner}</div>
+        <div className="flex flex-1 flex-col">{clickableContent}</div>
       )}
+
       <button
         onClick={handleToggle}
         title={item.isRead ? 'Mark as unread' : 'Mark as read'}
