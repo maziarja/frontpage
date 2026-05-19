@@ -2,25 +2,36 @@ import Link from 'next/link'
 import { RssIcon } from 'lucide-react'
 import { QuickStartButton } from '@/components/dashboard/quick-start-button'
 import { QuickAddFeedButton } from '@/components/dashboard/quick-add-feed-button'
+import { DismissOnboardingButton } from '@/components/dashboard/dismiss-onboarding-button'
 import sampleFeeds from '@/data/sample-feeds.json'
 
 type Props = {
   isGuest: boolean
+  hasFeedsAlready?: boolean
 }
 
-export function OnboardingEmptyState({ isGuest }: Props) {
+export function OnboardingEmptyState({ isGuest, hasFeedsAlready = false }: Props) {
   return (
     <div className="mx-auto max-w-[60rem] px-4 py-8">
-      <div className="mb-8 text-center">
-        <RssIcon size={36} className="text-muted-foreground mx-auto mb-3" aria-hidden />
-        <h1 className="text-2xl font-semibold">
-          {isGuest ? 'Welcome to Frontpage' : 'Get started with Frontpage'}
-        </h1>
-        <p className="text-muted-foreground mt-1 text-sm">
-          {isGuest
-            ? 'You\'re browsing as a guest. Sign up to subscribe and save your own feeds.'
-            : 'Add your first feeds or use a quick-start pack to begin reading in seconds.'}
-        </p>
+      <div className="mb-8">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <RssIcon size={28} className="text-muted-foreground shrink-0" aria-hidden />
+            <div>
+              <h2 className="text-xl font-semibold">
+                {hasFeedsAlready ? 'Discover more feeds' : isGuest ? 'Welcome to Frontpage' : 'Get started with Frontpage'}
+              </h2>
+              <p className="text-muted-foreground mt-0.5 text-sm">
+                {isGuest
+                  ? "You're browsing as a guest. Sign up to subscribe and save your own feeds."
+                  : hasFeedsAlready
+                  ? 'Add more curated feeds or use a quick-start pack below.'
+                  : 'Add your first feeds or use a quick-start pack to begin reading in seconds.'}
+              </p>
+            </div>
+          </div>
+          {!isGuest && <DismissOnboardingButton />}
+        </div>
       </div>
 
       <div className="space-y-6">

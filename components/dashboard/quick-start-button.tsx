@@ -6,6 +6,7 @@ import { ZapIcon, LoaderIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { quickStart } from '@/app/_actions/quick-start'
+import { dismissOnboarding } from '@/app/_actions/onboarding'
 
 type Props = {
   categoryName: string
@@ -23,9 +24,12 @@ export function QuickStartButton({ categoryName, feedCount }: Props) {
       toast.error(result.error)
     } else if (result.added > 0) {
       toast.success(`Added ${result.added} feed${result.added !== 1 ? 's' : ''} to ${categoryName}`)
+      await dismissOnboarding()
       router.refresh()
     } else {
       toast.info(`Already subscribed to all ${categoryName} feeds`)
+      await dismissOnboarding()
+      router.refresh()
     }
     setPending(false)
   }

@@ -20,17 +20,25 @@ export default async function DashboardPage() {
   const demoUserId = isGuest ? await getDemoUserId() : null
   const userId = session?.user.id ?? demoUserId
 
+  const onboardingDismissed = cookieStore.get('onboarding-dismissed')?.value === 'true'
+  const showOnboarding = !isGuest && !onboardingDismissed
+
   const [{ items, hasMore, totalFeedCount }, summary] = await Promise.all([
     getDashboardItems(userId),
     getFeedHealthSummary(userId),
   ])
 
-  if (totalFeedCount === 0) {
-    return <OnboardingEmptyState isGuest={isGuest} />
+  if (showOnboarding && totalFeedCount === 0) {
+    return <OnboardingEmptyState isGuest={false} />
   }
 
   return (
     <div className="mx-auto max-w-[60rem] px-4 py-4">
+      {showOnboarding && (
+        <div className="mb-8 border-b pb-8">
+          <OnboardingEmptyState isGuest={false} hasFeedsAlready />
+        </div>
+      )}
       <h1 className="mb-4 text-2xl font-semibold">All Items</h1>
       {summary.erroring > 0 && (
         <FeedHealthSummaryBanner healthy={summary.healthy} erroring={summary.erroring} />
