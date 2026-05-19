@@ -203,7 +203,7 @@
 
 ## Phase 14 — Stretch Features
 
-- [ ] **Bookmarks** — bookmark from list or reader view, dedicated Saved section, sort by date saved / published, search within bookmarks
+- [ ] **Bookmarks** — bookmark from list or reader view, dedicated Saved section, search within bookmarks
 - [ ] **Search** — full-text across titles + descriptions, highlight matches, filter by feed / category / date, results within 500ms, recent search history
 - [ ] **OPML import** — parse file, preview feed list, flag duplicates, report results; handle `sample-feeds.opml`
 - [ ] **OPML export** — current subscriptions with category structure

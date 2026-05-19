@@ -1,7 +1,7 @@
 'use client'
 
 import { formatDistanceToNow } from 'date-fns'
-import { CheckIcon, RotateCcwIcon } from 'lucide-react'
+import { BookmarkCheckIcon, BookmarkIcon, CheckIcon, RotateCcwIcon } from 'lucide-react'
 import { FeedFavicon } from '@/components/dashboard/feed-favicon'
 import type { FeedItemRow } from '@/lib/feed-items'
 
@@ -11,12 +11,13 @@ type Props = {
   onMarkRead?: (id: string) => void
   onMarkUnread?: (id: string) => void
   onOpenReader?: (id: string) => void
+  onToggleBookmark?: (id: string) => void
 }
 
 const bodyClassName =
-  'group-hover:border-primary group-hover:bg-muted/50 flex min-w-0 flex-col gap-2 overflow-hidden rounded-lg border-l-[3px] border-transparent py-4 pr-8 pl-4 transition-all duration-200'
+  'group-hover:border-primary group-hover:bg-muted/50 flex min-w-0 flex-col gap-2 overflow-hidden rounded-lg border-l-[3px] border-transparent py-4 pr-14 pl-4 transition-all duration-200'
 
-export function FeedItemCardStandard({ item, showSource = false, onMarkRead, onMarkUnread, onOpenReader }: Props) {
+export function FeedItemCardStandard({ item, showSource = false, onMarkRead, onMarkUnread, onOpenReader, onToggleBookmark }: Props) {
   const date = item.publishedAt ?? item.createdAt
   const hasUrl = Boolean(item.url)
   const hasContent = !item.url && Boolean(item.content || item.description)
@@ -26,6 +27,12 @@ export function FeedItemCardStandard({ item, showSource = false, onMarkRead, onM
     e.stopPropagation()
     if (item.isRead) onMarkUnread?.(item.id)
     else onMarkRead?.(item.id)
+  }
+
+  function handleBookmark(e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    onToggleBookmark?.(item.id)
   }
 
   function handleOpen() {
@@ -83,14 +90,26 @@ export function FeedItemCardStandard({ item, showSource = false, onMarkRead, onM
       ) : (
         <div className={bodyClassName}>{inner}</div>
       )}
-      <button
-        onClick={handleToggle}
-        title={item.isRead ? 'Mark as unread' : 'Mark as read'}
-        aria-label={item.isRead ? 'Mark as unread' : 'Mark as read'}
-        className="text-muted-foreground hover:bg-muted hover:text-foreground absolute top-3 right-2 rounded p-1 opacity-0 transition-all duration-200 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
-      >
-        {item.isRead ? <RotateCcwIcon size={13} /> : <CheckIcon size={13} />}
-      </button>
+      <div className="absolute top-3 right-2 flex items-center gap-0.5 opacity-0 transition-all duration-200 group-hover:opacity-100 [@media(hover:none)]:opacity-100">
+        {onToggleBookmark && (
+          <button
+            onClick={handleBookmark}
+            title={item.isBookmarked ? 'Remove from saved' : 'Save article'}
+            aria-label={item.isBookmarked ? 'Remove from saved' : 'Save article'}
+            className="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1 transition-colors duration-150"
+          >
+            {item.isBookmarked ? <BookmarkCheckIcon size={13} /> : <BookmarkIcon size={13} />}
+          </button>
+        )}
+        <button
+          onClick={handleToggle}
+          title={item.isRead ? 'Mark as unread' : 'Mark as read'}
+          aria-label={item.isRead ? 'Mark as unread' : 'Mark as read'}
+          className="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1 transition-colors duration-150"
+        >
+          {item.isRead ? <RotateCcwIcon size={13} /> : <CheckIcon size={13} />}
+        </button>
+      </div>
     </div>
   )
 }

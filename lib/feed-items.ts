@@ -11,6 +11,7 @@ export type FeedItemRow = {
   publishedAt: Date | null
   createdAt: Date
   isRead: boolean
+  isBookmarked: boolean
   summary: string | null
   tags: string[]
   feed: { id: string; title: string; faviconUrl: string | null }
@@ -28,7 +29,7 @@ type FeedItemWithReadCount = {
   summary: string | null
   tags: string[]
   feed: { id: string; title: string; faviconUrl: string | null }
-  _count: { readStates: number }
+  _count: { readStates: number; bookmarks: number }
 }
 
 const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
@@ -67,6 +68,7 @@ export function mapFeedItem(item: FeedItemWithReadCount): FeedItemRow {
     publishedAt: item.publishedAt,
     createdAt: item.createdAt,
     isRead: item._count.readStates > 0,
+    isBookmarked: item._count.bookmarks > 0,
     summary: item.summary,
     tags: item.tags,
     feed: item.feed,

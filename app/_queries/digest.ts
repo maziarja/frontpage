@@ -48,7 +48,7 @@ export async function getDigestData(userId: string, isGuest: boolean): Promise<D
           category: { select: { id: true, name: true } },
         },
       },
-      _count: { select: { readStates: { where: { userId } } } },
+      _count: { select: { readStates: { where: { userId } }, bookmarks: { where: { userId } } } },
     },
     orderBy: { publishedAt: 'desc' },
   })

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { FeedItemCard } from '@/components/dashboard/feed-item-card'
 import { ReaderSheet } from '@/components/dashboard/reader-sheet'
 import { useLayout } from '@/components/dashboard/layout-context'
+import { useGuest } from '@/components/dashboard/guest-context'
 import { useFeedItems } from '@/components/dashboard/use-feed-items'
 import { getMoreFeedItems } from '@/app/_actions/feed-items'
 import { markFeedRead, markCategoryRead } from '@/app/_actions/read-state'
@@ -20,6 +21,8 @@ type Props = {
   filter: Filter
   showSource?: boolean
   emptyMessage?: string
+  hideUnbookmarked?: boolean
+  onUnbookmark?: (id: string) => void
 }
 
 export function FeedItemList({
@@ -28,13 +31,17 @@ export function FeedItemList({
   filter,
   showSource = false,
   emptyMessage = 'No articles yet.',
+  hideUnbookmarked = false,
+  onUnbookmark,
 }: Props) {
   const { layout } = useLayout()
+  const isGuest = useGuest()
   const {
     items,
     setItems,
     handleMarkRead,
     handleMarkUnread,
+    handleToggleBookmark,
     updateItemSummary,
     openReader,
     navigateReader,
@@ -75,10 +82,19 @@ export function FeedItemList({
     })
   }
 
+  function wrappedToggleBookmark(id: string) {
+    if (hideUnbookmarked && onUnbookmark) {
+      const item = items.find((i) => i.id === id)
+      if (item?.isBookmarked) onUnbookmark(id)
+    }
+    handleToggleBookmark(id)
+  }
+
+  const visibleItems = hideUnbookmarked ? items.filter((i) => i.isBookmarked) : items
   const hasUnread = items.some((item) => !item.isRead)
   const isFiltered = Boolean(filter.feedId ?? filter.categoryId)
 
-  if (items.length === 0) {
+  if (visibleItems.length === 0) {
     return <p className="text-muted-foreground px-3 py-8 text-center text-sm">{emptyMessage}</p>
   }
 
@@ -110,7 +126,7 @@ export function FeedItemList({
               : 'flex flex-col gap-0.5'
           }
         >
-          {items.map((item) => (
+          {visibleItems.map((item) => (
             <FeedItemCard
               key={item.id}
               item={item}
@@ -119,6 +135,7 @@ export function FeedItemList({
               onMarkRead={handleMarkRead}
               onMarkUnread={handleMarkUnread}
               onOpenReader={openReader}
+              onToggleBookmark={isGuest ? undefined : wrappedToggleBookmark}
             />
           ))}
         </div>
@@ -141,6 +158,7 @@ export function FeedItemList({
         onPrev={readerIndex > 0 ? () => navigateReader('prev') : null}
         onNext={readerIndex < readerItems.length - 1 ? () => navigateReader('next') : null}
         onSummaryGenerated={updateItemSummary}
+        onToggleBookmark={isGuest ? undefined : wrappedToggleBookmark}
       />
     </>
   )

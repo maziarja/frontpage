@@ -10,7 +10,7 @@ export async function getDashboardItems(userId: string | null) {
       where: { feed: { userId } },
       include: {
         feed: { select: { id: true, title: true, faviconUrl: true } },
-        _count: { select: { readStates: { where: { userId } } } },
+        _count: { select: { readStates: { where: { userId } }, bookmarks: { where: { userId } } } },
       },
       orderBy: { publishedAt: 'desc' },
       take: PAGE_SIZE + 1,

@@ -13,10 +13,11 @@ type Props = {
   onMarkRead?: (id: string) => void
   onMarkUnread?: (id: string) => void
   onOpenReader?: (id: string) => void
+  onToggleBookmark?: (id: string) => void
 }
 
-export function FeedItemCard({ layout = Layout.STANDARD, ...props }: Props) {
-  if (layout === Layout.COMPACT) return <FeedItemCardCompact {...props} />
-  if (layout === Layout.CARD) return <FeedItemCardCard {...props} />
-  return <FeedItemCardStandard {...props} />
+export function FeedItemCard({ layout = Layout.STANDARD, onToggleBookmark, ...props }: Props) {
+  if (layout === Layout.COMPACT) return <FeedItemCardCompact {...props} onToggleBookmark={onToggleBookmark} />
+  if (layout === Layout.CARD) return <FeedItemCardCard {...props} onToggleBookmark={onToggleBookmark} />
+  return <FeedItemCardStandard {...props} onToggleBookmark={onToggleBookmark} />
 }

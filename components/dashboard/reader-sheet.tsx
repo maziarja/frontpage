@@ -1,7 +1,7 @@
 'use client'
 
 import { format, formatDistanceToNow } from 'date-fns'
-import { ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon, XIcon } from 'lucide-react'
+import { BookmarkCheckIcon, BookmarkIcon, ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon, XIcon } from 'lucide-react'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
 import { FeedFavicon } from '@/components/dashboard/feed-favicon'
 import { SummarizeButton } from '@/components/dashboard/summarize-button'
@@ -14,9 +14,10 @@ type Props = {
   onPrev: (() => void) | null
   onNext: (() => void) | null
   onSummaryGenerated?: (id: string, summary: string, tags: string[]) => void
+  onToggleBookmark?: (id: string) => void
 }
 
-export function ReaderSheet({ item, open, onOpenChange, onPrev, onNext, onSummaryGenerated }: Props) {
+export function ReaderSheet({ item, open, onOpenChange, onPrev, onNext, onSummaryGenerated, onToggleBookmark }: Props) {
   if (!item) return null
 
   const date = item.publishedAt ?? item.createdAt
@@ -47,6 +48,16 @@ export function ReaderSheet({ item, open, onOpenChange, onPrev, onNext, onSummar
             >
               <ChevronRightIcon size={16} />
             </button>
+            {onToggleBookmark && (
+              <button
+                onClick={() => onToggleBookmark(item.id)}
+                aria-label={item.isBookmarked ? 'Remove from saved' : 'Save article'}
+                title={item.isBookmarked ? 'Remove from saved' : 'Save article'}
+                className="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1.5 transition-colors"
+              >
+                {item.isBookmarked ? <BookmarkCheckIcon size={16} /> : <BookmarkIcon size={16} />}
+              </button>
+            )}
           </div>
 
           <button

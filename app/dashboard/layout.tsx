@@ -2,8 +2,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { TopNav } from '@/components/dashboard/top-nav'
 import { GuestBanner } from '@/components/dashboard/guest-banner'
-import { UnreadCountProvider } from '@/components/dashboard/unread-count-context'
-import { LayoutProvider } from '@/components/dashboard/layout-context'
+import { DashboardProviders } from '@/components/providers'
 import { Layout } from '@/lib/generated/prisma/enums'
 import { getLayoutSidebarData } from '@/app/_queries/layout'
 import { getUserLayout } from '@/app/_queries/preferences'
@@ -22,22 +21,24 @@ export default async function DashboardLayout({ children }: { children: React.Re
     ])
 
   return (
-    <UnreadCountProvider initialCounts={initialUnreadCounts ?? {}}>
-      <LayoutProvider initialLayout={initialLayout}>
-        <SidebarProvider>
-          <AppSidebar
-            user={user}
-            categoriesWithFeeds={categoriesWithFeeds}
-            uncategorizedFeeds={uncategorizedFeeds}
-            isGuest={isGuest}
-          />
-          <SidebarInset>
-            <TopNav />
-            {isGuest && <GuestBanner />}
-            <div className="flex-1 overflow-x-hidden overflow-y-auto">{children}</div>
-          </SidebarInset>
-        </SidebarProvider>
-      </LayoutProvider>
-    </UnreadCountProvider>
+    <DashboardProviders
+      isGuest={isGuest}
+      initialUnreadCounts={initialUnreadCounts ?? {}}
+      initialLayout={initialLayout}
+    >
+      <SidebarProvider>
+        <AppSidebar
+          user={user}
+          categoriesWithFeeds={categoriesWithFeeds}
+          uncategorizedFeeds={uncategorizedFeeds}
+          isGuest={isGuest}
+        />
+        <SidebarInset>
+          <TopNav />
+          {isGuest && <GuestBanner />}
+          <div className="flex-1 overflow-x-hidden overflow-y-auto">{children}</div>
+        </SidebarInset>
+      </SidebarProvider>
+    </DashboardProviders>
   )
 }
