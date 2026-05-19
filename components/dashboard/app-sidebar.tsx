@@ -48,6 +48,7 @@ type AppSidebarProps = {
   user: SidebarUser
   categoriesWithFeeds: SidebarCategory[]
   uncategorizedFeeds: SidebarFeed[]
+  isGuest?: boolean
 }
 
 const topNavItems = [
@@ -64,7 +65,7 @@ function UnreadBadge({ count }: { count: number }) {
   )
 }
 
-export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: AppSidebarProps) {
+export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds, isGuest = false }: AppSidebarProps) {
   const pathname = usePathname()
   const { counts } = useUnreadCounts()
   const { isMobile, setOpenMobile } = useSidebar()
@@ -125,9 +126,11 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
                 </span>
               )}
             </SidebarGroupLabel>
-            <SidebarGroupAction onClick={() => { closeMobileSidebar(); setAddFeedOpen(true) }} aria-label="Add feed">
-              <PlusIcon />
-            </SidebarGroupAction>
+            {!isGuest && (
+              <SidebarGroupAction onClick={() => { closeMobileSidebar(); setAddFeedOpen(true) }} aria-label="Add feed">
+                <PlusIcon />
+              </SidebarGroupAction>
+            )}
             <SidebarGroupContent>
               {!hasContent ? (
                 <p className="text-muted-foreground px-2 py-1 text-sm">
@@ -176,17 +179,19 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
                     </SidebarMenu>
                   )}
 
-                  <SidebarMenu>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        onClick={() => { closeMobileSidebar(); setAddCategoryOpen(true) }}
-                        className="text-muted-foreground/70 hover:text-muted-foreground"
-                      >
-                        <FolderPlusIcon />
-                        <span>New category</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </SidebarMenu>
+                  {!isGuest && (
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          onClick={() => { closeMobileSidebar(); setAddCategoryOpen(true) }}
+                          className="text-muted-foreground/70 hover:text-muted-foreground"
+                        >
+                          <FolderPlusIcon />
+                          <span>New category</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  )}
                 </>
               )}
             </SidebarGroupContent>
@@ -198,12 +203,16 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds }: Ap
         </SidebarFooter>
       </Sidebar>
 
-      <AddFeedModal
-        open={addFeedOpen}
-        onOpenChange={setAddFeedOpen}
-        categories={categoriesWithFeeds}
-      />
-      <CreateCategoryModal open={addCategoryOpen} onOpenChange={setAddCategoryOpen} />
+      {!isGuest && (
+        <>
+          <AddFeedModal
+            open={addFeedOpen}
+            onOpenChange={setAddFeedOpen}
+            categories={categoriesWithFeeds}
+          />
+          <CreateCategoryModal open={addCategoryOpen} onOpenChange={setAddCategoryOpen} />
+        </>
+      )}
     </>
   )
 }

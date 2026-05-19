@@ -1,21 +1,33 @@
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 import { FeedItemList } from '@/components/dashboard/feed-item-list'
 import { FeedItemSkeleton } from '@/components/dashboard/feed-item-skeleton'
 import { FeedHealthSummaryBanner } from '@/components/dashboard/feed-health-summary-banner'
+import { OnboardingEmptyState } from '@/components/dashboard/onboarding-empty-state'
 import { getDashboardItems } from '@/app/_queries/dashboard'
 import { getFeedHealthSummary } from '@/app/_queries/feed'
+import { getDemoUserId } from '@/lib/demo-user'
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() })
-  if (!session) redirect('/sign-in')
+  const cookieStore = await cookies()
+  const isGuest = cookieStore.get('guest-session')?.value === 'true'
 
-  const [{ items, hasMore }, summary] = await Promise.all([
-    getDashboardItems(session.user.id),
-    getFeedHealthSummary(session.user.id),
+  if (!session && !isGuest) redirect('/sign-in')
+
+  const demoUserId = isGuest ? await getDemoUserId() : null
+  const userId = session?.user.id ?? demoUserId
+
+  const [{ items, hasMore, totalFeedCount }, summary] = await Promise.all([
+    getDashboardItems(userId),
+    getFeedHealthSummary(userId),
   ])
+
+  if (totalFeedCount === 0) {
+    return <OnboardingEmptyState isGuest={isGuest} />
+  }
 
   return (
     <div className="mx-auto max-w-[60rem] px-4 py-4">

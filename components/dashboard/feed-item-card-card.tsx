@@ -21,7 +21,7 @@ function extractImageUrl(html: string): string | null {
 export function FeedItemCardCard({ item, showSource = false, onMarkRead, onMarkUnread, onOpenReader }: Props) {
   const date = item.publishedAt ?? item.createdAt
   const hasUrl = Boolean(item.url)
-  const hasContent = Boolean(item.content)
+  const hasContent = !item.url && Boolean(item.content || item.description)
 
   const imageUrl =
     (item.description && extractImageUrl(item.description)) ??
@@ -71,11 +71,11 @@ export function FeedItemCardCard({ item, showSource = false, onMarkRead, onMarkU
               item.isRead ? 'scale-0 opacity-0' : 'unread-dot scale-100 opacity-100'
             }`}
           />
-          <p className="text-base font-semibold leading-snug tracking-tight">{item.title}</p>
+          <p className="min-w-0 break-words text-base font-semibold leading-snug tracking-tight">{item.title}</p>
         </div>
 
         {item.description && (
-          <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
+          <p className="text-muted-foreground line-clamp-3 break-words text-sm leading-relaxed">
             {item.description}
           </p>
         )}

@@ -5,6 +5,7 @@ export type FeedItemRow = {
   url: string
   title: string
   description: string | null
+  sanitizedDescription: string | null
   content: string | null
   author: string | null
   publishedAt: Date | null
@@ -44,12 +45,19 @@ const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
   },
 }
 
+function stripHtml(html: string): string {
+  return sanitizeHtml(html, { allowedTags: [], allowedAttributes: {} })
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 export function mapFeedItem(item: FeedItemWithReadCount): FeedItemRow {
   return {
     id: item.id,
     url: item.url,
     title: item.title,
-    description: item.description,
+    description: item.description ? stripHtml(item.description) : null,
+    sanitizedDescription: item.description ? sanitizeHtml(item.description, SANITIZE_OPTIONS) : null,
     content: item.content ? sanitizeHtml(item.content, SANITIZE_OPTIONS) : null,
     author: item.author,
     publishedAt: item.publishedAt,

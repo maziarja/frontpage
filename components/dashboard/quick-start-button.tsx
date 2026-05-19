@@ -1,0 +1,49 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { ZapIcon, LoaderIcon } from 'lucide-react'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { quickStart } from '@/app/_actions/quick-start'
+
+type Props = {
+  categoryName: string
+  feedCount: number
+}
+
+export function QuickStartButton({ categoryName, feedCount }: Props) {
+  const router = useRouter()
+  const [pending, setPending] = useState(false)
+
+  async function handleQuickStart() {
+    setPending(true)
+    const result = await quickStart(categoryName)
+    if ('error' in result) {
+      toast.error(result.error)
+    } else if (result.added > 0) {
+      toast.success(`Added ${result.added} feed${result.added !== 1 ? 's' : ''} to ${categoryName}`)
+      router.refresh()
+    } else {
+      toast.info(`Already subscribed to all ${categoryName} feeds`)
+    }
+    setPending(false)
+  }
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={handleQuickStart}
+      disabled={pending}
+      className="text-xs"
+    >
+      {pending ? (
+        <LoaderIcon size={12} className="animate-spin" aria-hidden />
+      ) : (
+        <ZapIcon size={12} aria-hidden />
+      )}
+      Quick start · {feedCount}
+    </Button>
+  )
+}

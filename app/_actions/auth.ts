@@ -14,6 +14,8 @@ export async function signInAction(email: string, password: string) {
   } catch {
     return { error: 'Invalid email or password' }
   }
+  const cookieStore = await cookies()
+  cookieStore.delete('guest-session')
   redirect('/dashboard')
 }
 
@@ -26,6 +28,8 @@ export async function signUpAction(name: string, email: string, password: string
   } catch {
     return { error: 'Sign up failed. Please try again.' }
   }
+  const cookieStore = await cookies()
+  cookieStore.delete('guest-session')
   redirect('/dashboard')
 }
 

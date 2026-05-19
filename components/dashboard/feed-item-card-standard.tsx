@@ -14,12 +14,12 @@ type Props = {
 }
 
 const bodyClassName =
-  'group-hover:border-primary group-hover:bg-muted/50 flex flex-col gap-2 rounded-lg border-l-[3px] border-transparent py-4 pr-8 pl-4 transition-all duration-200'
+  'group-hover:border-primary group-hover:bg-muted/50 flex min-w-0 flex-col gap-2 overflow-hidden rounded-lg border-l-[3px] border-transparent py-4 pr-8 pl-4 transition-all duration-200'
 
 export function FeedItemCardStandard({ item, showSource = false, onMarkRead, onMarkUnread, onOpenReader }: Props) {
   const date = item.publishedAt ?? item.createdAt
   const hasUrl = Boolean(item.url)
-  const hasContent = Boolean(item.content)
+  const hasContent = !item.url && Boolean(item.content || item.description)
 
   function handleToggle(e: React.MouseEvent) {
     e.preventDefault()
@@ -53,11 +53,11 @@ export function FeedItemCardStandard({ item, showSource = false, onMarkRead, onM
             item.isRead ? 'scale-0 opacity-0' : 'unread-dot scale-100 opacity-100'
           }`}
         />
-        <p className="text-base leading-snug font-semibold tracking-tight">{item.title}</p>
+        <p className="min-w-0 text-base font-semibold leading-snug tracking-tight [overflow-wrap:anywhere]">{item.title}</p>
       </div>
 
       {item.description && (
-        <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">
+        <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed [overflow-wrap:anywhere]">
           {item.description}
         </p>
       )}
@@ -71,7 +71,7 @@ export function FeedItemCardStandard({ item, showSource = false, onMarkRead, onM
   )
 
   return (
-    <div className="group relative">
+    <div className="group relative min-w-0">
       {hasUrl ? (
         <a href={item.url} target="_blank" rel="noopener noreferrer" onClick={handleOpen} className={bodyClassName}>
           {inner}

@@ -22,9 +22,10 @@ type Props = {
   feed: Feed
   categories: Category[]
   children: React.ReactNode
+  isGuest?: boolean
 }
 
-export function FeedPageActions({ feed, categories, children }: Props) {
+export function FeedPageActions({ feed, categories, children, isGuest = false }: Props) {
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [pending, startTransition] = useTransition()
@@ -55,41 +56,43 @@ export function FeedPageActions({ feed, categories, children }: Props) {
             </div>
 
             {/* Action buttons */}
-            <div className="flex shrink-0 items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="group"
-                onClick={() => {
-                  setEditOpen((v) => !v)
-                  setDeleteOpen(false)
-                }}
-                aria-expanded={editOpen}
-                aria-label="Edit feed"
-              >
-                <PencilIcon size={15} aria-hidden="true" />
-                <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-200 ease-in-out group-hover:grid-cols-[1fr]">
-                  <span className="overflow-hidden pl-1 whitespace-nowrap">Edit</span>
-                </span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="group text-destructive hover:text-destructive"
-                onClick={() => {
-                  setDeleteOpen((v) => !v)
-                  setEditOpen(false)
-                }}
-                aria-expanded={deleteOpen}
-                aria-label="Delete feed"
-                disabled={pending}
-              >
-                <Trash2Icon size={15} aria-hidden="true" />
-                <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-200 ease-in-out group-hover:grid-cols-[1fr]">
-                  <span className="overflow-hidden pl-1 whitespace-nowrap">Delete</span>
-                </span>
-              </Button>
-            </div>
+            {!isGuest && (
+              <div className="flex shrink-0 items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="group"
+                  onClick={() => {
+                    setEditOpen((v) => !v)
+                    setDeleteOpen(false)
+                  }}
+                  aria-expanded={editOpen}
+                  aria-label="Edit feed"
+                >
+                  <PencilIcon size={15} aria-hidden="true" />
+                  <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-200 ease-in-out group-hover:grid-cols-[1fr]">
+                    <span className="overflow-hidden pl-1 whitespace-nowrap">Edit</span>
+                  </span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="group text-destructive hover:text-destructive"
+                  onClick={() => {
+                    setDeleteOpen((v) => !v)
+                    setEditOpen(false)
+                  }}
+                  aria-expanded={deleteOpen}
+                  aria-label="Delete feed"
+                  disabled={pending}
+                >
+                  <Trash2Icon size={15} aria-hidden="true" />
+                  <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-200 ease-in-out group-hover:grid-cols-[1fr]">
+                    <span className="overflow-hidden pl-1 whitespace-nowrap">Delete</span>
+                  </span>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

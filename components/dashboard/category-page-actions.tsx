@@ -9,9 +9,10 @@ import { deleteCategory } from '@/app/_actions/category'
 
 type Props = {
   category: { id: string; name: string }
+  isGuest?: boolean
 }
 
-export function CategoryPageActions({ category }: Props) {
+export function CategoryPageActions({ category, isGuest = false }: Props) {
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [pending, startTransition] = useTransition()
@@ -30,35 +31,37 @@ export function CategoryPageActions({ category }: Props) {
     <div>
       <div className="flex items-start justify-between gap-4">
         <h1 className="text-2xl leading-tight font-semibold">{category.name}</h1>
-        <div className="flex shrink-0 items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="group"
-            onClick={() => { setEditOpen((v) => !v); setDeleteOpen(false) }}
-            aria-expanded={editOpen}
-            aria-label="Rename category"
-          >
-            <PencilIcon size={15} aria-hidden="true" />
-            <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-200 ease-in-out group-hover:grid-cols-[1fr]">
-              <span className="overflow-hidden pl-1 whitespace-nowrap">Rename</span>
-            </span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="group text-destructive hover:text-destructive"
-            onClick={() => { setDeleteOpen((v) => !v); setEditOpen(false) }}
-            aria-expanded={deleteOpen}
-            aria-label="Delete category"
-            disabled={pending}
-          >
-            <Trash2Icon size={15} aria-hidden="true" />
-            <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-200 ease-in-out group-hover:grid-cols-[1fr]">
-              <span className="overflow-hidden pl-1 whitespace-nowrap">Delete</span>
-            </span>
-          </Button>
-        </div>
+        {!isGuest && (
+          <div className="flex shrink-0 items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="group"
+              onClick={() => { setEditOpen((v) => !v); setDeleteOpen(false) }}
+              aria-expanded={editOpen}
+              aria-label="Rename category"
+            >
+              <PencilIcon size={15} aria-hidden="true" />
+              <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-200 ease-in-out group-hover:grid-cols-[1fr]">
+                <span className="overflow-hidden pl-1 whitespace-nowrap">Rename</span>
+              </span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="group text-destructive hover:text-destructive"
+              onClick={() => { setDeleteOpen((v) => !v); setEditOpen(false) }}
+              aria-expanded={deleteOpen}
+              aria-label="Delete category"
+              disabled={pending}
+            >
+              <Trash2Icon size={15} aria-hidden="true" />
+              <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-200 ease-in-out group-hover:grid-cols-[1fr]">
+                <span className="overflow-hidden pl-1 whitespace-nowrap">Delete</span>
+              </span>
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Rename panel */}

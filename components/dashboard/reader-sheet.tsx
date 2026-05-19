@@ -81,9 +81,9 @@ export function ReaderSheet({ item, open, onOpenChange, onPrev, onNext }: Props)
           {/* Article content */}
           {item.content ? (
             <div className="reader-content" dangerouslySetInnerHTML={{ __html: item.content }} />
-          ) : (
-            <p className="text-muted-foreground text-sm">{item.description}</p>
-          )}
+          ) : item.sanitizedDescription ? (
+            <div className="reader-content" dangerouslySetInnerHTML={{ __html: item.sanitizedDescription }} />
+          ) : null}
         </div>
 
         {/* Footer */}

@@ -15,7 +15,7 @@ export async function GET(request: Request) {
       `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=32`,
       { signal: AbortSignal.timeout(5_000) },
     )
-    if (!res.ok) return new Response(null, { status: 404 })
+    if (!res.ok) return new Response(FALLBACK_PNG, faviconHeaders())
     const buffer = await res.arrayBuffer()
     return new Response(buffer, {
       headers: {

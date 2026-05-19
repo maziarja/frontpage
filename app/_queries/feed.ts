@@ -44,7 +44,9 @@ export type FeedHealthSummary = {
   erroring: number
 }
 
-export async function getFeedHealthSummary(userId: string): Promise<FeedHealthSummary> {
+export async function getFeedHealthSummary(userId: string | null): Promise<FeedHealthSummary> {
+  if (!userId) return { total: 0, healthy: 0, erroring: 0 }
+
   const counts = await db.feed.groupBy({
     by: ['healthStatus'],
     where: { userId },

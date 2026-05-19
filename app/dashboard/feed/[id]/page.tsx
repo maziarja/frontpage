@@ -1,7 +1,8 @@
 import { Suspense } from 'react'
 import { notFound, redirect } from 'next/navigation'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { auth } from '@/lib/auth'
+import { getDemoUserId } from '@/lib/demo-user'
 import { formatDistanceToNow } from 'date-fns'
 import { FeedHealthBadge } from '@/components/dashboard/feed-health-badge'
 import { RetryButton } from '@/components/dashboard/retry-button'
@@ -14,14 +15,20 @@ import { getFeedPageData } from '@/app/_queries/feed'
 export default async function FeedPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const session = await auth.api.getSession({ headers: await headers() })
-  if (!session) redirect('/sign-in')
+  const cookieStore = await cookies()
+  const isGuest = cookieStore.get('guest-session')?.value === 'true'
+  if (!session && !isGuest) redirect('/sign-in')
 
-  const data = await getFeedPageData(session.user.id, id)
+  const demoUserId = isGuest ? await getDemoUserId() : null
+  const userId = session?.user.id ?? demoUserId
+  if (!userId) redirect('/sign-in')
+
+  const data = await getFeedPageData(userId, id)
   if (!data) notFound()
   const { feed, categories, items, hasMore, itemCount } = data
   return (
     <div className="mx-auto max-w-[60rem] px-4 py-4">
-      <FeedPageActions feed={feed} categories={categories}>
+      <FeedPageActions feed={feed} categories={categories} isGuest={isGuest}>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <FeedHealthBadge status={feed.healthStatus} lastFetchedAt={feed.lastFetchedAt} />
           <span className="text-muted-foreground text-sm">
@@ -32,7 +39,7 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
               Last fetched {formatDistanceToNow(feed.lastSuccessfulFetchAt, { addSuffix: true })}
             </span>
           )}
-          {feed.healthStatus !== 'ERROR' && <RetryButton feedId={feed.id} />}
+          {!isGuest && feed.healthStatus !== 'ERROR' && <RetryButton feedId={feed.id} />}
         </div>
 
         {feed.healthStatus === 'ERROR' && (

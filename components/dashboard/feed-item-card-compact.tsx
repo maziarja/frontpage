@@ -16,7 +16,7 @@ type Props = {
 export function FeedItemCardCompact({ item, showSource = false, onMarkRead, onMarkUnread, onOpenReader }: Props) {
   const date = item.publishedAt ?? item.createdAt
   const hasUrl = Boolean(item.url)
-  const hasContent = Boolean(item.content)
+  const hasContent = !item.url && Boolean(item.content || item.description)
 
   function handleToggle(e: React.MouseEvent) {
     e.preventDefault()

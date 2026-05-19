@@ -52,11 +52,10 @@ export function FeedItemList({
   const [markingAllRead, setMarkingAllRead] = useState(false)
   const [readerItemId, setReaderItemId] = useState<string | null>(null)
 
-  // Items that can be opened in the reader (no URL, has content)
-  const readerItems = items.filter((i) => !i.url && i.content)
+  // Items that can be opened in the reader (no URL, has content or description)
+  const readerItems = items.filter((i) => !i.url && (i.content || i.description))
   const readerIndex = readerItemId ? readerItems.findIndex((i) => i.id === readerItemId) : -1
   const readerItem = readerIndex >= 0 ? readerItems[readerIndex] : null
-
   function handleMarkRead(id: string) {
     const item = items.find((i) => i.id === id)
     if (!item || item.isRead) return

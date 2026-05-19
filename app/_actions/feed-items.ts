@@ -1,10 +1,11 @@
 'use server'
 
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 import { db } from '@/db'
 import { PAGE_SIZE } from '@/lib/const'
 import { mapFeedItem } from '@/lib/feed-items'
+import { getDemoUserId } from '@/lib/demo-user'
 
 export type { FeedItemRow } from '@/lib/feed-items'
 
@@ -22,9 +23,12 @@ function buildWhere(userId: string, filter: Filter) {
 
 export async function getMoreFeedItems(cursor: string, filter: Filter) {
   const session = await auth.api.getSession({ headers: await headers() })
-  if (!session) return []
+  const cookieStore = await cookies()
+  const isGuest = cookieStore.get('guest-session')?.value === 'true'
 
-  const userId = session.user.id
+  const demoUserId = isGuest ? await getDemoUserId() : null
+  const userId = session?.user.id ?? demoUserId
+  if (!userId) return []
 
   const results = await db.feedItem.findMany({
     where: buildWhere(userId, filter),
