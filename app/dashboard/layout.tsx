@@ -2,10 +2,11 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { TopNav } from '@/components/dashboard/top-nav'
 import { GuestBanner } from '@/components/dashboard/guest-banner'
+import { NewItemsBanner } from '@/components/dashboard/new-items-banner'
 import { DashboardProviders } from '@/components/providers'
 import { Layout } from '@/lib/generated/prisma/enums'
 import { getLayoutSidebarData } from '@/app/_queries/layout'
-import { getUserLayout } from '@/app/_queries/preferences'
+import { getUserPreferences } from '@/app/_queries/preferences'
 import { requireDashboardSession } from '@/lib/dashboard-session'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -14,17 +15,20 @@ export default async function DashboardLayout({ children }: { children: React.Re
     ? { id: session.user.id, name: session.user.name, email: session.user.email }
     : null
 
-  const [{ categoriesWithFeeds, uncategorizedFeeds, initialUnreadCounts }, initialLayout] =
+  const [{ categoriesWithFeeds, uncategorizedFeeds, initialUnreadCounts }, prefs] =
     await Promise.all([
       getLayoutSidebarData(userId),
-      userId && !isGuest ? getUserLayout(userId) : Promise.resolve(Layout.STANDARD),
+      userId && !isGuest
+        ? getUserPreferences(userId)
+        : Promise.resolve({ layout: Layout.STANDARD, onboardingDismissed: false, refreshInterval: 0 }),
     ])
 
   return (
     <DashboardProviders
       isGuest={isGuest}
       initialUnreadCounts={initialUnreadCounts ?? {}}
-      initialLayout={initialLayout}
+      initialLayout={prefs.layout}
+      initialRefreshInterval={prefs.refreshInterval}
     >
       <SidebarProvider>
         <AppSidebar
@@ -36,6 +40,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <SidebarInset>
           <TopNav />
           {isGuest && <GuestBanner />}
+          <NewItemsBanner />
           <div className="flex-1 overflow-x-hidden overflow-y-auto">{children}</div>
         </SidebarInset>
       </SidebarProvider>

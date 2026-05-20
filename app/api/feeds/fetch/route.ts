@@ -2,9 +2,7 @@ import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 import { db } from '@/db'
 import { feedFetchQuerySchema } from '@/schemas/feed'
-import { parseFeed } from '@/lib/feed-parser'
-import { FeedHealthStatus } from '@/lib/generated/prisma/client'
-import { calculateNextRetryAt } from '@/lib/feed-retry'
+import { fetchAndStoreFeed } from '@/lib/fetch-feed-core'
 
 export async function GET(request: Request) {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -25,98 +23,9 @@ export async function GET(request: Request) {
     return Response.json({ error: 'Feed not found' }, { status: 404 })
   }
 
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), 10_000)
-
-  try {
-    const fetchHeaders: Record<string, string> = {}
-    if (feed.etag) fetchHeaders['If-None-Match'] = feed.etag
-    if (feed.lastModified) fetchHeaders['If-Modified-Since'] = feed.lastModified
-
-    const response = await fetch(feed.url, {
-      signal: controller.signal,
-      redirect: 'follow',
-      headers: fetchHeaders,
-    })
-
-    if (response.status === 304) {
-      return Response.json({ newItemCount: 0, cached: true })
-    }
-
-    if (!response.ok) {
-      await db.feed.update({
-        where: { id: feed.id },
-        data: {
-          healthStatus: FeedHealthStatus.ERROR,
-          errorMessage: `HTTP ${response.status}: ${response.statusText}`,
-          lastFetchedAt: new Date(),
-          retryCount: (feed.retryCount ?? 0) + 1,
-          nextRetryAt: calculateNextRetryAt(feed.retryCount ?? 0),
-        },
-      })
-      return Response.json(
-        { error: `Upstream feed returned HTTP ${response.status}` },
-        { status: 502 },
-      )
-    }
-
-    const xml = await response.text()
-
-    let items
-    try {
-      items = parseFeed(xml, feed.id)
-    } catch {
-      await db.feed.update({
-        where: { id: feed.id },
-        data: {
-          healthStatus: FeedHealthStatus.ERROR,
-          errorMessage: 'Failed to parse feed XML',
-          lastFetchedAt: new Date(),
-          retryCount: (feed.retryCount ?? 0) + 1,
-          nextRetryAt: calculateNextRetryAt(feed.retryCount ?? 0),
-        },
-      })
-      return Response.json({ error: 'Failed to parse feed XML' }, { status: 422 })
-    }
-
-    const created = await db.feedItem.createMany({
-      data: items.map((item) => ({ ...item, feedId: feed.id })),
-      skipDuplicates: true,
-    })
-
-    await db.feed.update({
-      where: { id: feed.id },
-      data: {
-        healthStatus: FeedHealthStatus.ACTIVE,
-        lastFetchedAt: new Date(),
-        lastSuccessfulFetchAt: new Date(),
-        errorMessage: null,
-        retryCount: 0,
-        nextRetryAt: null,
-        etag: response.headers.get('etag')?.trim() ?? undefined,
-        lastModified: response.headers.get('last-modified')?.trim() ?? undefined,
-        ...(response.url !== feed.url ? { url: response.url } : {}),
-      },
-    })
-
-    return Response.json({ newItemCount: created.count, cached: false })
-  } catch (err) {
-    const isTimeout = err instanceof Error && err.name === 'AbortError'
-    const errorMessage = isTimeout ? 'Request timed out after 10s' : 'Failed to fetch feed'
-
-    await db.feed.update({
-      where: { id: feed.id },
-      data: {
-        healthStatus: FeedHealthStatus.ERROR,
-        errorMessage,
-        lastFetchedAt: new Date(),
-        retryCount: feed.retryCount + 1,
-        nextRetryAt: calculateNextRetryAt(feed.retryCount),
-      },
-    })
-
-    return Response.json({ error: errorMessage }, { status: 502 })
-  } finally {
-    clearTimeout(timer)
+  const result = await fetchAndStoreFeed(feed)
+  if (result.error) {
+    return Response.json({ error: result.error }, { status: 502 })
   }
+  return Response.json({ newItemCount: result.newItemCount, cached: result.cached })
 }

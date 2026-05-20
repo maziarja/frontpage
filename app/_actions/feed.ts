@@ -8,6 +8,7 @@ import { db } from '@/db'
 import { FeedHealthStatus } from '@/lib/generated/prisma/client'
 import { addFeedSchema, editFeedSchema } from '@/schemas/feed'
 import { parseFeedMeta, parseFeed } from '@/lib/feed-parser'
+import { fetchAndStoreFeed } from '@/lib/fetch-feed-core'
 
 function getFaviconUrl(feedUrl: string): string | undefined {
   try {
@@ -197,4 +198,26 @@ export async function deleteFeed(feedId: string): Promise<{ error: string } | vo
 
   revalidatePath('/dashboard')
   redirect('/dashboard')
+}
+
+export async function refreshAllFeeds(): Promise<{ newItemCount: number }> {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session) return { newItemCount: 0 }
+
+  const now = new Date()
+  const feeds = await db.feed.findMany({
+    where: {
+      userId: session.user.id,
+      OR: [{ nextRetryAt: null }, { nextRetryAt: { lte: now } }],
+    },
+  })
+
+  const results = await Promise.allSettled(feeds.map((feed) => fetchAndStoreFeed(feed)))
+
+  const newItemCount = results.reduce((sum, result) => {
+    if (result.status === 'fulfilled') return sum + result.value.newItemCount
+    return sum
+  }, 0)
+
+  return { newItemCount }
 }

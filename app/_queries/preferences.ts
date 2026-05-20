@@ -6,6 +6,7 @@ export async function getUserPreferences(userId: string) {
   return {
     layout: pref?.layout ?? Layout.STANDARD,
     onboardingDismissed: pref?.onboardingDismissed ?? false,
+    refreshInterval: pref?.refreshInterval ?? 30,
   }
 }
 

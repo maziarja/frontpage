@@ -24,3 +24,22 @@ export async function updateLayout(layout: Layout) {
     update: { layout },
   })
 }
+
+const VALID_INTERVALS = [0, 15, 30, 60] as const
+type RefreshInterval = (typeof VALID_INTERVALS)[number]
+
+export async function updateRefreshInterval(
+  intervalMinutes: number,
+): Promise<{ error: string } | void> {
+  if (!(VALID_INTERVALS as readonly number[]).includes(intervalMinutes)) {
+    return { error: 'Invalid interval' }
+  }
+  const interval = intervalMinutes as RefreshInterval
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session) return
+  await db.userPreference.upsert({
+    where: { userId: session.user.id },
+    create: { userId: session.user.id, refreshInterval: interval },
+    update: { refreshInterval: interval },
+  })
+}
