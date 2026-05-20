@@ -77,14 +77,6 @@
           "format": "rss2"
         },
         {
-          "title": "A List Apart",
-          "feedUrl": "https://alistapart.com/main/feed/",
-          "siteUrl": "https://alistapart.com/",
-          "description": "For people who make websites.",
-          "format": "rss2",
-          "notes": "Infrequent publishing — may appear stale"
-        },
-        {
           "title": "UX Collective",
           "feedUrl": "https://uxdesign.cc/feed",
           "siteUrl": "https://uxdesign.cc/",

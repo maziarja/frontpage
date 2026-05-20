@@ -21,7 +21,6 @@
       <outline type="rss" text="Sidebar.io" title="Sidebar.io" xmlUrl="https://sidebar.io/feed.xml" htmlUrl="https://sidebar.io/" description="The five best design links, every day." />
       <outline type="rss" text="Nielsen Norman Group" title="Nielsen Norman Group" xmlUrl="https://www.nngroup.com/feed/rss/" htmlUrl="https://www.nngroup.com/" />
       <outline type="rss" text="Figma Blog" title="Figma Blog" xmlUrl="https://www.figma.com/blog/feed/" htmlUrl="https://www.figma.com/blog/" />
-      <outline type="rss" text="A List Apart" title="A List Apart" xmlUrl="https://alistapart.com/main/feed/" htmlUrl="https://alistapart.com/" description="For people who make websites." />
       <outline type="rss" text="UX Collective" title="UX Collective" xmlUrl="https://uxdesign.cc/feed" htmlUrl="https://uxdesign.cc/" />
     </outline>
 
