@@ -37,7 +37,7 @@ export async function getDigestData(userId: string, isGuest: boolean): Promise<D
   const rawItems = await db.feedItem.findMany({
     where: {
       feed: { userId },
-      publishedAt: { gte: since },
+      createdAt: { gte: since },
     },
     include: {
       feed: {
