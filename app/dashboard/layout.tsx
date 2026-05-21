@@ -3,6 +3,7 @@ import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { TopNav } from '@/components/dashboard/top-nav'
 import { GuestBanner } from '@/components/dashboard/guest-banner'
 import { NewItemsBanner } from '@/components/dashboard/new-items-banner'
+import { GlobalShortcuts } from '@/components/dashboard/global-shortcuts'
 import { DashboardProviders } from '@/components/providers'
 import { Layout } from '@/lib/generated/prisma/enums'
 import { getLayoutSidebarData } from '@/app/_queries/layout'
@@ -41,6 +42,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <TopNav />
           {isGuest && <GuestBanner />}
           <NewItemsBanner />
+          <GlobalShortcuts />
           <div className="flex-1 overflow-x-hidden overflow-y-auto">{children}</div>
         </SidebarInset>
       </SidebarProvider>

@@ -8,13 +8,14 @@ import type { FeedItemRow } from '@/lib/feed-items'
 type Props = {
   item: FeedItemRow
   showSource?: boolean
+  isFocused?: boolean
   onMarkRead?: (id: string) => void
   onMarkUnread?: (id: string) => void
   onOpenReader?: (id: string) => void
   onToggleBookmark?: (id: string) => void
 }
 
-export function FeedItemCardCompact({ item, showSource = false, onMarkRead, onMarkUnread, onOpenReader, onToggleBookmark }: Props) {
+export function FeedItemCardCompact({ item, showSource = false, isFocused = false, onMarkRead, onMarkUnread, onOpenReader, onToggleBookmark }: Props) {
   const date = item.publishedAt ?? item.createdAt
   const hasUrl = Boolean(item.url)
   const hasContent = !item.url && Boolean(item.content || item.description)
@@ -38,7 +39,7 @@ export function FeedItemCardCompact({ item, showSource = false, onMarkRead, onMa
   }
 
   const inner = (
-    <div className="group-hover:bg-muted/50 flex items-center gap-2 rounded-md px-3 py-2 transition-colors duration-150">
+    <div className={`flex items-center gap-2 rounded-md px-3 py-2 transition-colors duration-150 group-hover:bg-muted/50 ${isFocused ? 'bg-muted/50' : ''}`}>
       <span
         aria-hidden="true"
         className={`block h-[5px] w-[5px] shrink-0 rounded-full transition-all duration-500 ease-out ${

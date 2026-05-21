@@ -10,6 +10,7 @@ type Props = {
   item: FeedItemRow
   layout?: Layout
   showSource?: boolean
+  isFocused?: boolean
   onMarkRead?: (id: string) => void
   onMarkUnread?: (id: string) => void
   onOpenReader?: (id: string) => void

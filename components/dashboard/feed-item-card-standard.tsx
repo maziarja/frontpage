@@ -8,19 +8,18 @@ import type { FeedItemRow } from '@/lib/feed-items'
 type Props = {
   item: FeedItemRow
   showSource?: boolean
+  isFocused?: boolean
   onMarkRead?: (id: string) => void
   onMarkUnread?: (id: string) => void
   onOpenReader?: (id: string) => void
   onToggleBookmark?: (id: string) => void
 }
 
-const bodyClassName =
-  'group-hover:border-primary group-hover:bg-muted/50 flex min-w-0 flex-col gap-2 overflow-hidden rounded-lg border-l-[3px] border-transparent py-4 pr-14 pl-4 transition-all duration-200'
-
-export function FeedItemCardStandard({ item, showSource = false, onMarkRead, onMarkUnread, onOpenReader, onToggleBookmark }: Props) {
+export function FeedItemCardStandard({ item, showSource = false, isFocused = false, onMarkRead, onMarkUnread, onOpenReader, onToggleBookmark }: Props) {
   const date = item.publishedAt ?? item.createdAt
   const hasUrl = Boolean(item.url)
   const hasContent = !item.url && Boolean(item.content || item.description)
+  const bodyClassName = `group-hover:border-primary group-hover:bg-muted/50 flex min-w-0 flex-col gap-2 overflow-hidden rounded-lg border-l-[3px] py-4 pr-14 pl-4 transition-all duration-200 ${isFocused ? 'border-primary bg-muted/50' : 'border-transparent'}`
 
   function handleToggle(e: React.MouseEvent) {
     e.preventDefault()

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { Layout } from '@/lib/generated/prisma/enums'
 import { Button } from '@/components/ui/button'
 import { FeedItemCard } from '@/components/dashboard/feed-item-card'
@@ -8,6 +8,8 @@ import { ReaderSheet } from '@/components/dashboard/reader-sheet'
 import { useLayout } from '@/components/dashboard/layout-context'
 import { useGuest } from '@/components/dashboard/guest-context'
 import { useFeedItems } from '@/components/dashboard/use-feed-items'
+import { useSearch } from '@/components/dashboard/search-context'
+import { useKeyboardNav } from '@/components/dashboard/use-keyboard-nav'
 import { getMoreFeedItems } from '@/app/_actions/feed-items'
 import { markFeedRead, markCategoryRead } from '@/app/_actions/read-state'
 import type { FeedItemRow } from '@/app/_actions/feed-items'
@@ -38,6 +40,7 @@ export function FeedItemList({
 }: Props) {
   const { layout } = useLayout()
   const isGuest = useGuest()
+  const { open: isSearchOpen } = useSearch()
   const {
     items,
     setItems,
@@ -58,6 +61,40 @@ export function FeedItemList({
   const [hasMore, setHasMore] = useState(initialHasMore)
   const [pending, startTransition] = useTransition()
   const [markingAllRead, setMarkingAllRead] = useState(false)
+
+  let visibleItems = hideUnbookmarked ? items.filter((i) => i.isBookmarked) : items
+  if (searchQuery.trim()) {
+    const q = searchQuery.toLowerCase()
+    visibleItems = visibleItems.filter(
+      (i) => i.title.toLowerCase().includes(q) || (i.description ?? '').toLowerCase().includes(q)
+    )
+  }
+
+  const isNavDisabled = readerItemId !== null || isSearchOpen
+
+  function handleOpen(item: FeedItemRow) {
+    if (item.url) {
+      window.open(item.url, '_blank', 'noopener,noreferrer')
+      if (!item.isRead) handleMarkRead(item.id)
+    } else if (item.content || item.description) {
+      openReader(item.id)
+    }
+  }
+
+  const { focusedIndex, setFocusedIndex, setItemRef } = useKeyboardNav({
+    items: visibleItems,
+    isDisabled: isNavDisabled,
+    onOpen: handleOpen,
+    onMarkRead: handleMarkRead,
+    onMarkUnread: handleMarkUnread,
+    onToggleBookmark: handleToggleBookmark,
+    onLoadMore: hasMore && !pending ? loadMore : undefined,
+  })
+
+  // Reset cursor when visible items change (search query or filter changes)
+  useEffect(() => {
+    setFocusedIndex(null)
+  }, [searchQuery, filter.feedId, filter.categoryId, setFocusedIndex])
 
   async function handleMarkAllRead() {
     setMarkingAllRead(true)
@@ -95,13 +132,6 @@ export function FeedItemList({
     handleToggleBookmark(id)
   }
 
-  let visibleItems = hideUnbookmarked ? items.filter((i) => i.isBookmarked) : items
-  if (searchQuery.trim()) {
-    const q = searchQuery.toLowerCase()
-    visibleItems = visibleItems.filter(
-      (i) => i.title.toLowerCase().includes(q) || (i.description ?? '').toLowerCase().includes(q)
-    )
-  }
   const hasUnread = items.some((item) => !item.isRead)
   const isFiltered = Boolean(filter.feedId ?? filter.categoryId)
 
@@ -137,17 +167,19 @@ export function FeedItemList({
               : 'flex flex-col gap-0.5'
           }
         >
-          {visibleItems.map((item) => (
-            <FeedItemCard
-              key={item.id}
-              item={item}
-              layout={layout}
-              showSource={showSource}
-              onMarkRead={handleMarkRead}
-              onMarkUnread={handleMarkUnread}
-              onOpenReader={openReader}
-              onToggleBookmark={isGuest ? undefined : wrappedToggleBookmark}
-            />
+          {visibleItems.map((item, index) => (
+            <div key={item.id} ref={setItemRef(index)}>
+              <FeedItemCard
+                item={item}
+                layout={layout}
+                showSource={showSource}
+                isFocused={focusedIndex === index}
+                onMarkRead={handleMarkRead}
+                onMarkUnread={handleMarkUnread}
+                onOpenReader={openReader}
+                onToggleBookmark={isGuest ? undefined : wrappedToggleBookmark}
+              />
+            </div>
           ))}
         </div>
 

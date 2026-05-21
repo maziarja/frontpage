@@ -8,6 +8,7 @@ import type { FeedItemRow } from '@/lib/feed-items'
 type Props = {
   item: FeedItemRow
   showSource?: boolean
+  isFocused?: boolean
   onMarkRead?: (id: string) => void
   onMarkUnread?: (id: string) => void
   onOpenReader?: (id: string) => void
@@ -19,7 +20,7 @@ function extractImageUrl(html: string): string | null {
   return match?.[1] ?? null
 }
 
-export function FeedItemCardCard({ item, showSource = false, onMarkRead, onMarkUnread, onOpenReader, onToggleBookmark }: Props) {
+export function FeedItemCardCard({ item, showSource = false, isFocused = false, onMarkRead, onMarkUnread, onOpenReader, onToggleBookmark }: Props) {
   const date = item.publishedAt ?? item.createdAt
   const hasUrl = Boolean(item.url)
   const hasContent = !item.url && Boolean(item.content || item.description)
@@ -48,7 +49,7 @@ export function FeedItemCardCard({ item, showSource = false, onMarkRead, onMarkU
   }
 
   return (
-    <div className={`group relative flex flex-col rounded-lg border transition-all duration-200 hover:border-primary ${item.isRead ? 'opacity-80' : ''}`}>
+    <div className={`group relative flex flex-col rounded-lg border transition-all duration-200 hover:border-primary ${isFocused ? 'border-primary' : ''} ${item.isRead ? 'opacity-80' : ''}`}>
       {/* Full-card clickable overlay — sits at z-0 so action buttons above it capture their own clicks */}
       {hasUrl ? (
         <a

@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import { SearchIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SearchDialog } from '@/components/dashboard/search-dialog'
+import { useSearch } from '@/components/dashboard/search-context'
 
 export function NavSearchButton() {
-  const [open, setOpen] = useState(false)
+  const { open, setOpen } = useSearch()
 
   return (
     <>

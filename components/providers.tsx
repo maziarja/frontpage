@@ -5,6 +5,7 @@ import { GuestProvider } from '@/components/dashboard/guest-context'
 import { UnreadCountProvider } from '@/components/dashboard/unread-count-context'
 import { LayoutProvider } from '@/components/dashboard/layout-context'
 import { AutoRefreshProvider } from '@/components/dashboard/auto-refresh-provider'
+import { SearchProvider } from '@/components/dashboard/search-context'
 import { Layout } from '@/lib/generated/prisma/enums'
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -31,14 +32,16 @@ export function DashboardProviders({
   children,
 }: DashboardProvidersProps) {
   return (
-    <GuestProvider isGuest={isGuest}>
-      <UnreadCountProvider initialCounts={initialUnreadCounts}>
-        <LayoutProvider initialLayout={initialLayout}>
-          <AutoRefreshProvider initialRefreshInterval={initialRefreshInterval} isGuest={isGuest}>
-            {children}
-          </AutoRefreshProvider>
-        </LayoutProvider>
-      </UnreadCountProvider>
-    </GuestProvider>
+    <SearchProvider>
+      <GuestProvider isGuest={isGuest}>
+        <UnreadCountProvider initialCounts={initialUnreadCounts}>
+          <LayoutProvider initialLayout={initialLayout}>
+            <AutoRefreshProvider initialRefreshInterval={initialRefreshInterval} isGuest={isGuest}>
+              {children}
+            </AutoRefreshProvider>
+          </LayoutProvider>
+        </UnreadCountProvider>
+      </GuestProvider>
+    </SearchProvider>
   )
 }
