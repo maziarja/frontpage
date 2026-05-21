@@ -205,6 +205,26 @@ Occasionally the model suggested helper utilities or abstraction layers that add
 
 ## Known Limitations
 
+### Password Reset Not Implemented
+
+The "Forgot password?" flow is intentionally omitted. Here's why.
+
+A secure password reset requires an email delivery service to send the reset link to the user's inbox. The inbox is the security control — it proves the person requesting the reset actually owns that account. Without it, anyone who knows a user's email address could reset their password.
+
+Implementing this correctly for production requires a verified sending domain (e.g. `noreply@yourdomain.com`). Transactional email services like Resend or SendGrid require domain verification before they'll deliver to arbitrary recipients — not just for branding, but to prevent abuse and pass spam filters.
+
+This project doesn't have a dedicated domain, so there's no verified sender address to send from. Shipping a broken or insecure reset flow is worse than not shipping one at all, so the feature is excluded. The sign-in page has no "Forgot password?" link, and the `/reset-password` route doesn't exist.
+
+In a production deployment with a real domain, the implementation would be:
+1. Add a transactional email provider (Resend, SendGrid, or similar)
+2. Verify the sending domain in that provider's dashboard
+3. Wire `emailAndPassword.sendResetPassword` in Better Auth's config to call the provider's API
+4. Add the `/reset-password` and `/reset-password/confirm` pages
+
+The database schema already includes Better Auth's `Verification` table, which is what stores the time-limited reset tokens. The infrastructure is ready — it's purely the email delivery layer that's missing.
+
+### Other Limitations
+
 - **Smart category suggestions** — AI-powered auto-categorization (analyzing feed content to suggest which category a feed belongs in) is not yet implemented. Users assign categories manually.
 - **Desktop accessibility** — Lighthouse desktop accessibility score of 85 reflects some ARIA labeling gaps in complex interactive components (sidebar toggle, drag-and-drop handles).
 
