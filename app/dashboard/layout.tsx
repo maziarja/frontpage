@@ -39,7 +39,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           isGuest={isGuest}
         />
         <SidebarInset>
-          <TopNav />
+          <TopNav categories={categoriesWithFeeds.map((c) => ({ id: c.id, name: c.name }))} />
           {isGuest && <GuestBanner />}
           <NewItemsBanner />
           <GlobalShortcuts />
