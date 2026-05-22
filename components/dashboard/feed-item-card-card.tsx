@@ -49,7 +49,7 @@ export function FeedItemCardCard({ item, showSource = false, isFocused = false, 
   }
 
   return (
-    <div className={`group relative flex flex-col rounded-lg border transition-all duration-200 hover:border-primary ${isFocused ? 'border-primary' : ''} ${item.isRead ? 'opacity-80' : ''}`}>
+    <div className={`group relative flex flex-col rounded-xl border shadow-sm transition-all duration-200 hover:border-primary hover:shadow-md ${isFocused ? 'border-primary' : ''} ${item.isRead ? 'opacity-70' : ''}`}>
       {/* Full-card clickable overlay — sits at z-0 so action buttons above it capture their own clicks */}
       {hasUrl ? (
         <a
@@ -71,7 +71,7 @@ export function FeedItemCardCard({ item, showSource = false, isFocused = false, 
       {/* Card content — pointer-events-none so overlay receives clicks everywhere except the action buttons */}
       <div className="relative z-10 flex flex-1 flex-col pointer-events-none">
         {imageUrl && (
-          <div className="bg-muted aspect-video w-full overflow-hidden rounded-t-lg">
+          <div className="bg-muted aspect-video w-full overflow-hidden rounded-t-xl">
             <img
               src={imageUrl}
               alt=""

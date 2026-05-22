@@ -17,17 +17,17 @@ export function NewItemsBanner() {
 
   return (
     <div
-      className="flex items-center justify-between border-b bg-muted/40 px-4 py-2 text-sm"
+      className="flex items-center justify-between gap-4 border-b bg-primary/5 px-4 py-2.5 text-sm"
       role="status"
       aria-live="polite"
     >
-      <span className="text-muted-foreground">
+      <span className="font-medium text-foreground/80">
         {newItemCount} new {newItemCount === 1 ? 'item' : 'items'} available
       </span>
       <div className="flex items-center gap-3">
         <button
           onClick={handleReload}
-          className="font-medium underline-offset-4 hover:underline"
+          className="shrink-0 font-semibold text-primary underline-offset-4 hover:underline"
         >
           Reload to view
         </button>

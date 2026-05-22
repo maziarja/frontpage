@@ -13,7 +13,7 @@ export default async function DigestPage() {
 
   if (totalCount === 0) {
     return (
-      <div className="mx-auto max-w-[60rem] px-4 py-4">
+      <div className="mx-auto max-w-[60rem] px-4 py-6">
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <NewspaperIcon size={40} className="text-muted-foreground mb-4" aria-hidden />
           <h1 className="mb-2 text-2xl font-semibold">You&apos;re all caught up</h1>
@@ -26,9 +26,9 @@ export default async function DigestPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[60rem] px-4 py-4">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold">What did I miss?</h1>
+    <div className="mx-auto max-w-[60rem] px-4 py-6">
+      <div className="mb-6 border-b pb-5">
+        <h1 className="text-2xl font-semibold tracking-tight">What did I miss?</h1>
         <p className="text-muted-foreground mt-1 text-sm">
           {totalCount} new article{totalCount !== 1 ? 's' : ''} since{' '}
           {formatDistanceToNow(since, { addSuffix: true })}

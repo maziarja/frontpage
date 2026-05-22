@@ -19,7 +19,7 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
   if (!data) notFound()
   const { feed, categories, items, hasMore, itemCount } = data
   return (
-    <div className="mx-auto max-w-[60rem] px-4 py-4">
+    <div className="mx-auto max-w-[60rem] px-4 py-6">
       <FeedPageActions feed={feed} categories={categories} isGuest={isGuest}>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <FeedHealthBadge status={feed.healthStatus} lastFetchedAt={feed.lastFetchedAt} />
@@ -44,7 +44,7 @@ export default async function FeedPage({ params }: { params: Promise<{ id: strin
           />
         )}
       </FeedPageActions>
-      <div className="mt-6 border-t pt-4">
+      <div className="mt-8 border-t pt-6">
         <Suspense fallback={<FeedItemSkeleton />}>
           <FeedItemList
             initialItems={items}

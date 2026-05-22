@@ -30,7 +30,7 @@ export function CategoryPageActions({ category, isGuest = false }: Props) {
   return (
     <div>
       <div className="flex items-start justify-between gap-4">
-        <h1 className="text-2xl leading-tight font-semibold">{category.name}</h1>
+        <h1 className="text-2xl font-semibold leading-tight tracking-tight">{category.name}</h1>
         {!isGuest && (
           <div className="flex shrink-0 items-center gap-1">
             <Button

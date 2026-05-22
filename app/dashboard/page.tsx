@@ -24,13 +24,15 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[60rem] px-4 py-4">
+    <div className="mx-auto max-w-[60rem] px-4 py-6">
       {showOnboarding && (
         <div className="mb-8 border-b pb-8">
           <OnboardingEmptyState isGuest={false} hasFeedsAlready />
         </div>
       )}
-      <h1 className="mb-4 text-2xl font-semibold">All Items</h1>
+      <div className="mb-6 border-b pb-5">
+        <h1 className="text-2xl font-semibold tracking-tight">All Items</h1>
+      </div>
       {summary.erroring > 0 && (
         <FeedHealthSummaryBanner healthy={summary.healthy} erroring={summary.erroring} />
       )}

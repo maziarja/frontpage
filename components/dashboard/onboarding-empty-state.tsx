@@ -51,7 +51,7 @@ export function OnboardingEmptyState({ isGuest, hasFeedsAlready = false }: Props
               )}
             </div>
 
-            <div className="divide-y rounded-lg border">
+            <div className="divide-y rounded-xl border shadow-sm">
               {cat.feeds.map((feed) => {
                 const hostname = new URL(feed.feedUrl).hostname
                 return (

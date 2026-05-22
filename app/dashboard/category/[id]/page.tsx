@@ -17,9 +17,9 @@ export default async function CategoryPage({ params }: { params: Promise<{ id: s
   const { category, items, hasMore } = data
 
   return (
-    <div className="mx-auto max-w-[60rem] px-4 py-4">
+    <div className="mx-auto max-w-[60rem] px-4 py-6">
       <CategoryPageActions category={category} isGuest={isGuest} />
-      <div className="mt-6 border-t pt-4">
+      <div className="mt-8 border-t pt-6">
         <Suspense fallback={<FeedItemSkeleton />}>
           <FeedItemList
             initialItems={items}

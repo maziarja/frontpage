@@ -10,10 +10,8 @@ import { NavRefreshButton } from '@/components/dashboard/nav-refresh-button'
 
 export function TopNav() {
   return (
-    <header className="text-foreground flex h-12 shrink-0 items-center gap-2 border-b px-4">
+    <header className="text-foreground flex h-14 shrink-0 items-center gap-2 border-b px-4">
       <SidebarTrigger aria-label="Toggle sidebar" className="-ml-1" />
-      <Separator orientation="vertical" className="my-auto h-4" />
-      <span className="text-foreground text-sm font-medium">Frontpage</span>
 
       <div className="ml-auto flex items-center gap-1">
         <NavSearchButton />

@@ -48,7 +48,7 @@ export function FeedPageActions({ feed, categories, children, isGuest = false }:
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <h1 className="text-2xl leading-tight font-semibold">{feed.title}</h1>
+              <h1 className="text-2xl font-semibold leading-tight tracking-tight">{feed.title}</h1>
               {feed.description && (
                 <p className="text-muted-foreground mt-1 text-sm">{feed.description}</p>
               )}

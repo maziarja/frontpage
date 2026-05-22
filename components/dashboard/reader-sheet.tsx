@@ -70,13 +70,13 @@ export function ReaderSheet({ item, open, onOpenChange, onPrev, onNext, onSummar
         </div>
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto px-6 py-8">
-          <SheetTitle className="mb-4 text-xl leading-snug font-semibold tracking-tight">
+        <div className="flex-1 overflow-y-auto px-8 py-8">
+          <SheetTitle className="mb-5 text-2xl font-bold leading-snug tracking-tight">
             {item.title}
           </SheetTitle>
 
           {/* Metadata */}
-          <div className="text-muted-foreground mb-8 flex flex-wrap items-center gap-1.5 text-xs">
+          <div className="mb-8 flex flex-wrap items-center gap-1.5 rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
             <FeedFavicon src={item.feed.faviconUrl} size={13} />
             <span>{item.feed.title}</span>
             {item.author && (
@@ -115,12 +115,12 @@ export function ReaderSheet({ item, open, onOpenChange, onPrev, onNext, onSummar
 
         {/* Footer */}
         {item.url && (
-          <div className="border-t px-6 py-4">
+          <div className="border-t px-8 py-4">
             <a
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-accent hover:text-accent-hover inline-flex items-center gap-1.5 text-sm transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 transition-colors hover:underline"
             >
               View original article
               <ExternalLinkIcon size={13} />
