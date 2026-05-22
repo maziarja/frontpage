@@ -10,10 +10,12 @@ function FeatureCard({
   body: string
 }) {
   return (
-    <div className="rounded-lg border bg-background p-6 shadow-lg">
-      <div className="mb-3">{icon}</div>
+    <div className="rounded-xl border bg-background p-6 shadow-lg transition-shadow hover:shadow-xl">
+      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+        {icon}
+      </div>
       <h3 className="mb-2 text-lg font-semibold">{title}</h3>
-      <p className="text-base text-muted-foreground">{body}</p>
+      <p className="text-base leading-relaxed text-muted-foreground">{body}</p>
     </div>
   )
 }
@@ -21,10 +23,10 @@ function FeatureCard({
 export function LandingFeatures() {
   return (
     <section aria-labelledby="features-heading" className="border-y bg-muted/40">
-      <div className="mx-auto max-w-(--page-max-width,80rem) px-4 py-16 sm:px-6">
+      <div className="mx-auto max-w-(--page-max-width,80rem) px-4 py-20 sm:px-6">
         <h2
           id="features-heading"
-          className="mb-10 text-center text-2xl font-semibold"
+          className="mb-12 text-center text-2xl font-semibold tracking-tight"
         >
           Everything you need, nothing you don&apos;t
         </h2>
