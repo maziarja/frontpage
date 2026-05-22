@@ -19,7 +19,7 @@ export function FeedItemCardStandard({ item, showSource = false, isFocused = fal
   const date = item.publishedAt ?? item.createdAt
   const hasUrl = Boolean(item.url)
   const hasContent = !item.url && Boolean(item.content || item.description)
-  const bodyClassName = `flex min-w-0 flex-col gap-2 overflow-hidden rounded-xl py-4 pr-14 pl-4 transition-all duration-200 group-hover:bg-background group-hover:-translate-y-px group-hover:shadow-[0_4px_20px_rgba(0,0,0,0.07)] dark:group-hover:shadow-[0_4px_20px_rgba(0,0,0,0.35)] ${isFocused ? 'bg-background -translate-y-px shadow-[0_4px_20px_rgba(0,0,0,0.09)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)]' : ''}`
+  const bodyClassName = `flex min-w-0 flex-col gap-2 overflow-hidden rounded-xl py-4 pr-14 pl-4 transition-all duration-200 group-hover:bg-card group-hover:-translate-y-px group-hover:shadow-[0_4px_20px_rgba(0,0,0,0.07)] dark:group-hover:shadow-[0_4px_24px_rgba(99,102,241,0.13)] ${isFocused ? 'bg-card -translate-y-px shadow-[0_4px_20px_rgba(0,0,0,0.09)] dark:shadow-[0_4px_24px_rgba(99,102,241,0.16)]' : ''}`
 
   function handleToggle(e: React.MouseEvent) {
     e.preventDefault()

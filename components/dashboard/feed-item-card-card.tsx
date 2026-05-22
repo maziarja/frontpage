@@ -49,7 +49,7 @@ export function FeedItemCardCard({ item, showSource = false, isFocused = false, 
   }
 
   return (
-    <div className={`group relative flex flex-col rounded-xl border transition-all duration-200 hover:shadow-[0_8px_32px_rgba(0,0,0,0.10)] hover:-translate-y-1 dark:hover:shadow-[0_8px_32px_rgba(0,0,0,0.45)] ${isFocused ? 'shadow-[0_8px_32px_rgba(0,0,0,0.10)] -translate-y-1' : 'shadow-sm'} ${item.isRead ? 'opacity-70' : ''}`}>
+    <div className={`group relative flex flex-col rounded-xl border transition-all duration-200 hover:shadow-[0_8px_32px_rgba(0,0,0,0.10)] hover:-translate-y-1 dark:hover:shadow-[0_8px_32px_rgba(99,102,241,0.15)] ${isFocused ? 'shadow-[0_8px_32px_rgba(0,0,0,0.10)] -translate-y-1 dark:shadow-[0_8px_32px_rgba(99,102,241,0.18)]' : 'shadow-sm'} ${item.isRead ? 'opacity-70' : ''}`}>
       {/* Full-card clickable overlay — sits at z-0 so action buttons above it capture their own clicks */}
       {hasUrl ? (
         <a

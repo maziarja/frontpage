@@ -39,7 +39,7 @@ export function FeedItemCardCompact({ item, showSource = false, isFocused = fals
   }
 
   const inner = (
-    <div className={`flex items-center gap-2 rounded-xl px-3 py-2 transition-all duration-150 group-hover:bg-background group-hover:shadow-[0_2px_12px_rgba(0,0,0,0.06)] group-hover:-translate-y-px dark:group-hover:shadow-[0_2px_12px_rgba(0,0,0,0.3)] ${isFocused ? 'bg-background shadow-[0_2px_12px_rgba(0,0,0,0.07)] -translate-y-px' : ''}`}>
+    <div className={`flex items-center gap-2 rounded-xl px-3 py-2 transition-all duration-150 group-hover:bg-card group-hover:shadow-[0_2px_12px_rgba(0,0,0,0.06)] group-hover:-translate-y-px dark:group-hover:shadow-[0_2px_16px_rgba(99,102,241,0.12)] ${isFocused ? 'bg-card shadow-[0_2px_12px_rgba(0,0,0,0.07)] -translate-y-px dark:shadow-[0_2px_16px_rgba(99,102,241,0.14)]' : ''}`}>
       <span
         aria-hidden="true"
         className={`block h-[5px] w-[5px] shrink-0 rounded-full transition-all duration-500 ease-out ${
