@@ -41,8 +41,8 @@ export function SignInForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
+    <Card className="w-full max-w-sm shadow-lg">
+      <CardHeader className="border-b">
         <CardTitle className="text-xl">Sign in</CardTitle>
         <CardDescription>Enter your email and password to continue</CardDescription>
       </CardHeader>
@@ -61,6 +61,7 @@ export function SignInForm() {
                   type="email"
                   autoComplete="email"
                   placeholder="you@example.com"
+                  className="h-9"
                   aria-describedby={errors.email ? "email-error" : undefined}
                   aria-invalid={!!errors.email}
                 />
@@ -81,6 +82,7 @@ export function SignInForm() {
                   type="password"
                   autoComplete="current-password"
                   placeholder="••••••••"
+                  className="h-9"
                   aria-describedby={errors.password ? "password-error" : undefined}
                   aria-invalid={!!errors.password}
                 />
@@ -95,7 +97,7 @@ export function SignInForm() {
             </p>
           )}
 
-          <Button type="submit" className="w-full" disabled={isPending}>
+          <Button type="submit" size="lg" className="w-full h-10" disabled={isPending}>
             {isPending ? "Signing in…" : "Sign in"}
           </Button>
 

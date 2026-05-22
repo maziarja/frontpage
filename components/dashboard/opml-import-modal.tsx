@@ -226,11 +226,10 @@ export function OpmlImportModal({ open, onOpenChange }: Props) {
           <div className="flex justify-end gap-2 border-t px-5 py-3">
             {state === 'preview' && (
               <>
-                <Button variant="outline" size="sm" onClick={() => handleClose(false)}>
+                <Button variant="outline" onClick={() => handleClose(false)}>
                   Cancel
                 </Button>
                 <Button
-                  size="sm"
                   onClick={handleImport}
                   disabled={!preview || preview.newCount === 0}
                 >
@@ -241,7 +240,7 @@ export function OpmlImportModal({ open, onOpenChange }: Props) {
               </>
             )}
             {state === 'done' && (
-              <Button size="sm" onClick={() => handleClose(false)}>
+              <Button onClick={() => handleClose(false)}>
                 Close
               </Button>
             )}

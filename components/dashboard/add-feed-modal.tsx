@@ -74,6 +74,7 @@ export function AddFeedModal({ open, onOpenChange, categories = [] }: Props) {
               type="url"
               placeholder="https://example.com/feed.xml"
               autoFocus
+              className="h-9"
               {...register('url')}
               aria-invalid={!!errors.url}
               aria-describedby={errors.url ? 'feed-url-error' : undefined}
@@ -127,7 +128,7 @@ export function AddFeedModal({ open, onOpenChange, categories = [] }: Props) {
             </p>
           )}
 
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" size="lg" className="w-full" disabled={pending}>
             {pending ? 'Adding…' : 'Add feed'}
           </Button>
         </form>

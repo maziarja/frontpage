@@ -41,8 +41,8 @@ export function SignUpForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
+    <Card className="w-full max-w-sm shadow-lg">
+      <CardHeader className="border-b">
         <CardTitle className="text-xl">Create an account</CardTitle>
         <CardDescription>Enter your details to get started</CardDescription>
       </CardHeader>
@@ -61,6 +61,7 @@ export function SignUpForm() {
                   type="text"
                   autoComplete="name"
                   placeholder="Your name"
+                  className="h-9"
                   aria-describedby={errors.name ? "name-error" : undefined}
                   aria-invalid={!!errors.name}
                 />
@@ -81,6 +82,7 @@ export function SignUpForm() {
                   type="email"
                   autoComplete="email"
                   placeholder="you@example.com"
+                  className="h-9"
                   aria-describedby={errors.email ? "email-error" : undefined}
                   aria-invalid={!!errors.email}
                 />
@@ -101,6 +103,7 @@ export function SignUpForm() {
                   type="password"
                   autoComplete="new-password"
                   placeholder="Min. 8 characters"
+                  className="h-9"
                   aria-describedby={errors.password ? "password-error" : undefined}
                   aria-invalid={!!errors.password}
                 />
@@ -115,7 +118,7 @@ export function SignUpForm() {
             </p>
           )}
 
-          <Button type="submit" className="w-full" disabled={isPending}>
+          <Button type="submit" size="lg" className="w-full h-10" disabled={isPending}>
             {isPending ? "Creating account…" : "Create account"}
           </Button>
 

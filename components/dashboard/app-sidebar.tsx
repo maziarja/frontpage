@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { FeedFavicon } from '@/components/dashboard/feed-favicon'
+import { FrontpageIcon } from '@/components/icons/frontpage-icon'
 import { useUnreadCounts } from '@/components/dashboard/unread-count-context'
 import { SortableCategoryList } from '@/components/dashboard/sortable-category-list'
 import { CreateCategoryModal } from '@/components/dashboard/create-category-modal'
@@ -90,8 +91,9 @@ export function AppSidebar({ user, categoriesWithFeeds, uncategorizedFeeds, isGu
           <Link
             href="/dashboard"
             onClick={closeMobileSidebar}
-            className="text-sidebar-foreground text-lg font-semibold tracking-tight transition-opacity hover:opacity-70"
+            className="flex items-center gap-2 text-sidebar-foreground text-lg font-semibold tracking-tight transition-opacity hover:opacity-70"
           >
+            <FrontpageIcon className="h-4 w-4 shrink-0" />
             Frontpage
           </Link>
         </SidebarHeader>

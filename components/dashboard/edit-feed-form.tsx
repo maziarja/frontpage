@@ -70,6 +70,7 @@ export function EditFeedForm({
         <Label htmlFor="feed-title">Title</Label>
         <Input
           id="feed-title"
+          className="h-9"
           {...register('title')}
           aria-invalid={!!errors.title}
           aria-describedby={errors.title ? 'feed-title-error' : undefined}
@@ -119,7 +120,7 @@ export function EditFeedForm({
         </p>
       )}
 
-      <Button type="submit" disabled={pending || !isDirty}>
+      <Button type="submit" size="lg" className="w-full" disabled={pending || !isDirty}>
         {pending ? 'Saving…' : 'Save changes'}
       </Button>
     </form>

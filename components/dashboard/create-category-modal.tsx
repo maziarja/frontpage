@@ -64,6 +64,7 @@ export function CreateCategoryModal({ open, onOpenChange }: Props) {
               id="category-name"
               placeholder="e.g. Technology"
               autoFocus
+              className="h-9"
               {...register('name')}
               aria-invalid={!!errors.name}
               aria-describedby={errors.name ? 'category-name-error' : undefined}
@@ -79,7 +80,7 @@ export function CreateCategoryModal({ open, onOpenChange }: Props) {
               </p>
             )}
           </div>
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" size="lg" className="w-full" disabled={pending}>
             {pending ? 'Creating…' : 'Create category'}
           </Button>
         </form>
