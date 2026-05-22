@@ -20,11 +20,15 @@ export function NavRefreshButton() {
 
   async function handleRefreshNow() {
     setOpen(false)
-    const count = await triggerRefresh()
-    if (count === 0) {
-      toast.success('Already up to date')
-    } else {
-      toast.success(`${count} new ${count === 1 ? 'item' : 'items'} found`)
+    try {
+      const count = await triggerRefresh()
+      if (count === 0) {
+        toast.success('Already up to date')
+      } else {
+        toast.success(`${count} new ${count === 1 ? 'item' : 'items'} found`)
+      }
+    } catch {
+      toast.error('Failed to refresh feeds')
     }
   }
 

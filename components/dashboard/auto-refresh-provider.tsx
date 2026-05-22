@@ -46,6 +46,8 @@ export function AutoRefreshProvider({ children, initialRefreshInterval, isGuest 
         const { newItemCount: count } = await refreshAllFeeds()
         if (addToBanner && count > 0) setNewItemCount((prev) => prev + count)
         return count
+      } catch {
+        return 0
       } finally {
         isRefreshingRef.current = false
         setIsRefreshing(false)
