@@ -6,6 +6,7 @@ type Counts = Record<string, number> // feedId → unread count
 
 type ContextValue = {
   counts: Counts
+  markAllReadSignal: number
   increment: (feedId: string, amount?: number) => void
   decrement: (feedId: string, amount?: number) => void
   reset: (feedId: string) => void
@@ -22,6 +23,7 @@ export function UnreadCountProvider({
   children: React.ReactNode
 }) {
   const [counts, setCounts] = useState(initialCounts)
+  const [markAllReadSignal, setMarkAllReadSignal] = useState(0)
 
   function increment(feedId: string, amount = 1) {
     setCounts((prev) => ({ ...prev, [feedId]: (prev[feedId] ?? 0) + amount }))
@@ -37,10 +39,11 @@ export function UnreadCountProvider({
 
   function resetAll() {
     setCounts((prev) => Object.fromEntries(Object.keys(prev).map((k) => [k, 0])))
+    setMarkAllReadSignal((v) => v + 1)
   }
 
   return (
-    <UnreadCountContext.Provider value={{ counts, increment, decrement, reset, resetAll }}>
+    <UnreadCountContext.Provider value={{ counts, markAllReadSignal, increment, decrement, reset, resetAll }}>
       {children}
     </UnreadCountContext.Provider>
   )

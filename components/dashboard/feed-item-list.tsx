@@ -12,6 +12,7 @@ import { useSearch } from '@/components/dashboard/search-context'
 import { useKeyboardNav } from '@/components/dashboard/use-keyboard-nav'
 import { getMoreFeedItems } from '@/app/_actions/feed-items'
 import { markFeedRead, markCategoryRead } from '@/app/_actions/read-state'
+import { useUnreadCounts } from '@/components/dashboard/unread-count-context'
 import type { FeedItemRow } from '@/app/_actions/feed-items'
 import { PAGE_SIZE } from '@/lib/const'
 
@@ -39,6 +40,7 @@ export function FeedItemList({
   searchQuery = '',
 }: Props) {
   const { layout } = useLayout()
+  const { markAllReadSignal } = useUnreadCounts()
   const isGuest = useGuest()
   const { open: isSearchOpen } = useSearch()
   const {
@@ -95,6 +97,12 @@ export function FeedItemList({
   useEffect(() => {
     setFocusedIndex(null)
   }, [searchQuery, filter.feedId, filter.categoryId, setFocusedIndex])
+
+  // Sync item isRead when global "mark all as read" fires from the nav bar
+  useEffect(() => {
+    if (markAllReadSignal === 0) return
+    setItems((prev) => prev.map((i) => ({ ...i, isRead: true })))
+  }, [markAllReadSignal, setItems])
 
   async function handleMarkAllRead() {
     setMarkingAllRead(true)
