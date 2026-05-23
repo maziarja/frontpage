@@ -8,6 +8,7 @@ import { MarkAllReadButton } from '@/components/dashboard/mark-all-read-button'
 import { NavSearchButton } from '@/components/dashboard/nav-search-button'
 import { NavRefreshButton } from '@/components/dashboard/nav-refresh-button'
 import { NavAddFeedButton } from '@/components/dashboard/nav-add-feed-button'
+import { NavKeyboardShortcutButton } from '@/components/dashboard/nav-keyboard-shortcut-button'
 
 type Category = { id: string; name: string }
 
@@ -22,6 +23,7 @@ export function TopNav({ categories }: { categories: Category[] }) {
         <NavRefreshButton />
         <MarkAllReadButton />
         <LayoutSwitcher />
+        <NavKeyboardShortcutButton />
         <Separator orientation="vertical" className="mx-1 my-auto h-4" />
         <ThemeToggle />
       </div>
